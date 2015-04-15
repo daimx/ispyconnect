@@ -59,6 +59,7 @@
         <xs:element name="IPMode" type="xs:string" />
         <xs:element name="IPv4Address" type="xs:string" />
         <xs:element name="IPv6Address" type="xs:string" />
+        <xs:element name="SpecificIP" type="xs:boolean" default="false"/>
         <xs:element name="DHCPReroute" type="xs:boolean" default="true"/>
         <xs:element name="MediaDirectory" type="xs:string" default="NotSet" />
         <xs:element name="FFMPEG_SingleProcess" type="xs:boolean" />
@@ -142,7 +143,7 @@
         <xs:element name="VLCFileCache" type="xs:int" default="3000"/>
         <xs:element name="Referers" type="xs:string" default=""/>
         <xs:element name="EncryptCode" type="xs:string" default=""/>
-        
+        <xs:element name="PortMapperMode" type="xs:int" default="2"/>
         <xsd:element name="Logging">
           <xsd:complexType>
             <xsd:attribute name="FileSize" type="xsd:int" default="100" />

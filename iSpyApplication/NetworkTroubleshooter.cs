@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Threading;
 using System.Windows.Forms;
+using onvif.services;
 
 namespace iSpyApplication
 {
@@ -63,6 +64,10 @@ namespace iSpyApplication
 
         private void Troubleshooter()
         {
+            //causes a reset of detected ip addresses
+            MainForm.AddressIPv4 = MainForm.Conf.IPv4Address;
+            MainForm.AddressIPv6 = MainForm.Conf.IPv6Address;
+
             UISync.Execute(() => rtbOutput.Clear());
 
             try
@@ -94,6 +99,13 @@ namespace iSpyApplication
             }
             if (MainForm.Conf.SSLEnabled)
                 UISync.Execute(() => rtbOutput.Text += "Warning: Using SSL - disable SSL in settings if you are having problems with connecting."+NL);
+            if (MainForm.Conf.SpecificIP)
+                UISync.Execute(
+                    () =>
+                        rtbOutput.Text +=
+                            "Warning: You are binding to a specific IP address. This can cause issues on systems with multiple NICs. Try unchecking the Bind To IP Address option in settings/ web server if you have problems." +
+                            NL);
+            
             UISync.Execute(() => rtbOutput.Text += "Checking local server... ");
             Application.DoEvents();
             string res = "";

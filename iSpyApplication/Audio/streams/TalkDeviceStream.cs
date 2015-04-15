@@ -257,9 +257,10 @@ namespace iSpyApplication.Audio.streams
             if (_waveIn != null)
             {
                 // signal to stop
-                _waveIn.StopRecording();
                 _waveIn.DataAvailable -= WaveInDataAvailable;
+                _waveIn.StopRecording();
                 _waveIn.RecordingStopped -= WaveInRecordingStopped;
+                
 
                 if (WaveOutProvider != null)
                 {

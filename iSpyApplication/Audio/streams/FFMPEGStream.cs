@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using AForge.Video;
 using NAudio.Wave;
@@ -276,6 +277,7 @@ namespace iSpyApplication.Audio.streams
                     if (data!=null && data.Length > 0)
                     {
                         LastFrame = Helper.Now;
+                        //Debug.WriteLine("Got Audio Frame: "+LastFrame);
                         var da = DataAvailable;
                         if (da != null)
                         {

@@ -256,6 +256,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>DLLS\NAudio.dll</HintPath>
     </Reference>
+    <Reference Include="NAudio.WindowsMediaFormat">
+      <HintPath>DLLS\NAudio.WindowsMediaFormat.dll</HintPath>
+    </Reference>
     <Reference Include="NSpeex">
       <HintPath>DLLS\NSpeex.dll</HintPath>
     </Reference>
@@ -395,6 +398,8 @@
     <Compile Include="Audio\streams\AudioInStream.cs" />
     <Compile Include="Audio\streams\FFMPEGStream.cs" />
     <Compile Include="Audio\streams\GainHelper.cs" />
+    <Compile Include="Audio\talk\TalkHelper.cs" />
+    <Compile Include="Audio\talk\TalkIPWebcamAndroid.cs" />
     <Compile Include="Audio\talk\TalkLocal.cs" />
     <Compile Include="Audio\talk\TalkNetworkKinect.cs" />
     <Compile Include="Audio\VolumeWaveProvider16.cs" />

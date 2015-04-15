@@ -25,6 +25,8 @@ namespace iSpyApplication
         private bool _exiting;
 
         public int VideoSourceType;
+        public int AudioSourceType = -1;
+        public string AudioUrl = "";
         public int Ptzid = -1;
         public int Ptzentryid = 0;
         private const int MaxThreads = 10;
@@ -1139,6 +1141,23 @@ namespace iSpyApplication
                         VideoSourceType = 5;
                         break;
                 }
+                AudioSourceType = -1;
+                if (!String.IsNullOrEmpty(s.AudioSource))
+                {
+                    switch (s.AudioSource)
+                    {
+                        case "FFMPEG":
+                            AudioSourceType = 3;
+                            break;
+                        case "VLC":
+                            AudioSourceType = 2;
+                            if (!_vlc)
+                                AudioSourceType = 3;
+                            break;
+                    }
+                    AudioUrl = GetAddr(s, true);
+                }
+
 
                 Ptzid = -1;
 
@@ -1218,7 +1237,7 @@ namespace iSpyApplication
 
         
 
-        private string GetAddr(ManufacturersManufacturerUrl s)
+        private string GetAddr(ManufacturersManufacturerUrl s, bool audio = false)
         {
             Username = txtUsername.Text;
             Password = txtPassword.Text;
@@ -1246,7 +1265,7 @@ namespace iSpyApplication
             }
             connectUrl += addr + ":" + nPort;
 
-            string url = s.url;
+            string url = !audio?s.url:s.AudioURL;
             if (!url.StartsWith("/"))
                 url = "/" + url;
             

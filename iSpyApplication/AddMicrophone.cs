@@ -501,7 +501,8 @@ namespace iSpyApplication
                         {
                             if (Directory.Exists(olddir))
                             {
-                                Helper.CopyFolder(olddir, newdir);
+                                if (MessageBox.Show(this, "Copy Files?", LocRm.GetString("Confirm"), MessageBoxButtons.YesNo) == DialogResult.Yes)
+                                    Helper.CopyFolder(olddir, newdir);
                             }
                             else
                             {
@@ -518,7 +519,8 @@ namespace iSpyApplication
                                 case DialogResult.Yes:
                                     if (Directory.Exists(olddir))
                                     {
-                                        Helper.CopyFolder(olddir, newdir);
+                                        if (MessageBox.Show(this, "Copy Files?", LocRm.GetString("Confirm"), MessageBoxButtons.YesNo) == DialogResult.Yes)
+                                            Helper.CopyFolder(olddir, newdir);
                                     }
                                     else
                                     {

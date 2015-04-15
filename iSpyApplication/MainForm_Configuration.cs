@@ -423,31 +423,55 @@ namespace iSpyApplication
                 if (_ipv4Addresses != null)
                     return _ipv4Addresses;
 
-                IPAddress[] arr;
+                var arr = new List<IPAddress>();
+
+                //get ipv4 from connected NIC
+                var client = new TcpClient();
+                client.ReceiveTimeout = client.SendTimeout = 3000;
                 try
                 {
-                    arr =
-                        Dns.GetHostEntry(Dns.GetHostName())
-                            .AddressList.Where(p => p.AddressFamily == AddressFamily.InterNetwork)
-                            .ToArray();//attempts reverse dns lookup
+                    client.Connect("www.google.com", 80);
+                    var ep = client.Client.LocalEndPoint;
+                    client.Close();
+                    if (ep != null)
+                    {
+                        string detectip = ep.ToString();
+                        int end = detectip.IndexOf(":", StringComparison.Ordinal);
+                        detectip = detectip.Remove(end);
+                        arr.Add(System.Net.IPAddress.Parse(detectip));
+                    }
                 }
                 catch (Exception ex)
                 {
-                    LogExceptionToFile(ex);
+                    LogExceptionToFile(ex, "IP Lookup");
+                }
+
+
+                try
+                {
+                    arr.AddRange(
+                        Dns.GetHostEntry(Dns.GetHostName())
+                            .AddressList.Where(p => p.AddressFamily == AddressFamily.InterNetwork)
+                            .ToArray()); //attempts reverse dns lookup
+
+                }
+                catch (Exception ex)
+                {
+                    LogExceptionToFile(ex, "Configuration");
                     try
                     {
-                        arr = Dns.GetHostAddresses(Dns.GetHostName());
+                        arr.AddRange(Dns.GetHostAddresses(Dns.GetHostName()));
                     }
                     catch (Exception ex2)
                     {
-                        LogExceptionToFile(ex2);
+                        LogExceptionToFile(ex2, "Configuration");
                         //none in the system - just use the loopback address
                         _ipv4Addresses = new[] { System.Net.IPAddress.Parse("127.0.0.1") };
                         return _ipv4Addresses;
                     }
                     //ignore lookup
                 }
-                _ipv4Addresses = arr.Where(IsValidIP).ToArray();
+                _ipv4Addresses = arr.Where(IsValidIP).Distinct().ToArray();
 
                 if (!_ipv4Addresses.Any()) //none in the system - just use the loopback address
                     _ipv4Addresses = new[] { System.Net.IPAddress.Parse("127.0.0.1") };
@@ -460,11 +484,6 @@ namespace iSpyApplication
         {
             get
             {
-                if (Conf.IPv6Disabled)
-                {
-                    return Ipv6EmptyList;
-                }
-
                 if (_ipv6Addresses != null)
                     return _ipv6Addresses;
 
@@ -477,13 +496,14 @@ namespace iSpyApplication
 
                 try
                 {
-                    var addressInfoCollection = IPGlobalProperties.GetIPGlobalProperties().GetUnicastAddresses();
+                    UnicastIPAddressInformationCollection addressInfoCollection =
+                        IPGlobalProperties.GetIPGlobalProperties().GetUnicastAddresses();
 
-                    foreach (var addressInfo in addressInfoCollection)
+                    foreach (UnicastIPAddressInformation addressInfo in addressInfoCollection)
                     {
                         if (addressInfo.Address.IsIPv6Teredo ||
                             (addressInfo.Address.AddressFamily == AddressFamily.InterNetworkV6 &&
-                            !addressInfo.Address.IsIPv6LinkLocal && !addressInfo.Address.IsIPv6SiteLocal))
+                             !addressInfo.Address.IsIPv6LinkLocal && !addressInfo.Address.IsIPv6SiteLocal))
                         {
                             if (!System.Net.IPAddress.IsLoopback(addressInfo.Address))
                             {
@@ -495,9 +515,9 @@ namespace iSpyApplication
                 catch (Exception ex)
                 {
                     //unsupported on win xp
-                    LogExceptionToFile(ex);
+                    LogExceptionToFile(ex, "Configuration");
                 }
-                _ipv6Addresses = ipv6Adds.ToArray();
+                _ipv6Addresses = ipv6Adds.Distinct().ToArray();
                 return _ipv6Addresses;
 
             }
@@ -510,44 +530,25 @@ namespace iSpyApplication
             {
                 lock (ThreadLock)
                 {
-                    if (_ipv4Address != "")
+                    if (!String.IsNullOrEmpty(_ipv4Address))
                         return _ipv4Address;
 
-                    string detectip = "";
-                    foreach (IPAddress ip in AddressListIPv4)
+                    var ip = AddressListIPv4.FirstOrDefault(p => p.ToString() == Conf.IPv4Address);
+                    if (ip != null)
                     {
-                        if (detectip == "")
-                            detectip = ip.ToString();
-
-                        if (Conf.IPv4Address == ip.ToString())
-                        {
-                            _ipv4Address = ip.ToString();
-                            break;
-                        }
-
-                        if (IsValidIP(ip))
-                        {
-                            detectip = ip.ToString();
-                            break;
-                        }
+                        _ipv4Address = ip.ToString();
+                        return _ipv4Address;
                     }
-                    if (_ipv4Address == "")
-                        _ipv4Address = detectip;
-                    if (_ipv4Address == "")
+                    ip = AddressListIPv4.FirstOrDefault();
+                    if (ip != null)
                     {
-                        LogErrorToFile(
-                            "Unable to find a suitable IP address, check your network connection. Using the local loopback address.");
-                        _ipv4Address = "127.0.0.1";
+                        _ipv4Address = ip.ToString();
+                        return _ipv4Address;
                     }
-                    if (Conf.IPv4Address != _ipv4Address)
-                    {
-                        if (!String.IsNullOrWhiteSpace(Conf.IPv4Address))
-                        {
-                            LogErrorToFile("Your previous IP address has changed. Consider setting up your PC with a static IP address.");
-                        }
-                    }
-
-                    Conf.IPv4Address = _ipv4Address;
+                    LogErrorToFile(
+                            "Unable to find a suitable IP address, check your network connection. Using the local loopback address.",
+                            "Configuration");
+                    _ipv4Address = "127.0.0.1";
                     return _ipv4Address;
                 }
             }
@@ -555,7 +556,10 @@ namespace iSpyApplication
             {
                 lock (ThreadLock)
                 {
-                    _ipv4Address = value;
+                    _ipv4Addresses = null;
+                    _ipv4Address = null;
+
+                    Conf.IPv4Address = value;
                 }
             }
         }
@@ -591,32 +595,23 @@ namespace iSpyApplication
             {
                 lock (ThreadLock)
                 {
-                    if (_ipv6Address != "")
+                    if (!String.IsNullOrEmpty(_ipv6Address))
                         return _ipv6Address;
 
-                    string detectip = "";
-                    foreach (IPAddress ip in AddressListIPv6)
+                    var ip = AddressListIPv6.FirstOrDefault(p => p.ToString() == Conf.IPv4Address);
+                    if (ip != null)
                     {
-                        if (detectip == "")
-                            detectip = ip.ToString();
-
-                        if (Conf.IPv6Address == ip.ToString())
-                        {
-                            _ipv6Address = ip.ToString();
-                            break;
-                        }
-
-                        if (ip.IsIPv6Teredo)
-                        {
-                            detectip = ip.ToString();
-                        }
+                        _ipv6Address = ip.ToString();
+                        return _ipv6Address;
                     }
 
-                    if (_ipv6Address == "")
-                        _ipv6Address = detectip;
-                    Conf.IPv6Address = _ipv6Address;
-
-                    return _ipv6Address;
+                    ip = AddressListIPv6.OrderBy(p => p.IsIPv6Teredo).FirstOrDefault();
+                    if (ip != null)
+                    {
+                        _ipv6Address = ip.ToString();
+                        return _ipv6Address;
+                    }
+                    return "";
                 }
 
             }
@@ -624,7 +619,9 @@ namespace iSpyApplication
             {
                 lock (ThreadLock)
                 {
-                    _ipv6Address = value;
+                    _ipv6Addresses = null;
+                    _ipv6Address = null;
+                    Conf.IPv6Address = value;
                 }
             }
         }

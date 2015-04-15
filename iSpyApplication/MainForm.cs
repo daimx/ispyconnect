@@ -52,6 +52,8 @@ namespace iSpyApplication
 
         public static DateTime LastAlert = DateTime.MinValue;
 
+        public static MainForm InstanceReference;
+
         public static bool VLCRepeatAll;
         public static bool NeedsMediaRebuild = false;
         public static int MediaPanelPage;
@@ -498,6 +500,7 @@ namespace iSpyApplication
             {
                 _mIcp = null;
             }
+            InstanceReference = this;
         }
 
         public static DateTime NeedsMediaRefresh
@@ -1354,8 +1357,10 @@ namespace iSpyApplication
                 switch (Conf.IPMode)
                 {
                     case "IPv4":
-                        LogErrorToFile(
-                            "Your IP address has changed. Please set a static IP address for your local computer to ensure uninterrupted connectivity.");
+
+                        LogErrorToFile("Your IP address has changed. Please set a static IP address for your local computer to ensure uninterrupted connectivity.");
+                        //force reload of ip info
+                        AddressIPv4 = Conf.IPv4Address;
                         if (Conf.DHCPReroute && Conf.IPMode == "IPv4")
                         {
                             //check if IP address has changed
@@ -1392,6 +1397,7 @@ namespace iSpyApplication
                             LogErrorToFile(
                                 "Your IP address has changed. Please set a static IP address for your local computer to ensure uninterrupted connectivity.");
                             _ipv6Address = "";
+                            AddressIPv6 = Conf.IPv6Address;
                             Conf.IPv6Address = AddressIPv6;
                         }
                         break;
@@ -1593,6 +1599,12 @@ namespace iSpyApplication
             tssbGridViews.Visible = Helper.HasFeature(Enums.Features.Grid_Views);
             _toolStripButton4.Visible = menuItem31.Visible = Helper.HasFeature(Enums.Features.Settings);
             menuItem2.Visible = _menuItem20.Visible = _menuItem22.Visible = Helper.HasFeature(Enums.Features.Logs);
+
+            menuItem17.Visible =
+                menuItem23.Visible =
+                    menuItem25.Visible = menuItem18.Visible = menuItem7.Visible = Helper.HasFeature(Enums.Features.Access_Media);
+            menuItem31.Visible = _menuItem36.Visible = Helper.HasFeature(Enums.Features.Edit);
+
 
             menuItem31.Text = LocRm.GetString("GridViews");
             menuItem32.Text = LocRm.GetString("Manage");
@@ -2641,6 +2653,9 @@ namespace iSpyApplication
                 }
 
             }
+            _addCameraToolStripMenuItem.Visible =
+                _addFloorPlanToolStripMenuItem.Visible =
+                    _addMicrophoneToolStripMenuItem.Visible = Helper.HasFeature(Enums.Features.Edit);
         }
 
         public static void StartBrowser(string url)
@@ -3978,29 +3993,7 @@ namespace iSpyApplication
             if (!_talkSource.IsRunning)
                 _talkSource.Start();
 
-            switch (cw.Camobject.settings.audiomodel)
-            {
-                default://local playback
-                    _talkTarget = new TalkLocal(_talkSource);
-                    break;
-                case "Foscam":
-                    _talkTarget = new TalkFoscam(cw.Camobject.settings.audioip, cw.Camobject.settings.audioport,
-                        cw.Camobject.settings.audiousername, cw.Camobject.settings.audiopassword, _talkSource);
-                    break;
-                case "iSpyServer":
-                    _talkTarget = new TalkiSpyServer(cw.Camobject.settings.audioip, cw.Camobject.settings.audioport,
-                        _talkSource);
-                    break;
-                case "NetworkKinect":
-                    _talkTarget = new TalkNetworkKinect(cw.Camobject.settings.audioip, cw.Camobject.settings.audioport,
-                        _talkSource);
-                    break;
-                case "Axis":
-                    _talkTarget = new TalkAxis(cw.Camobject.settings.audioip, cw.Camobject.settings.audioport,
-                        cw.Camobject.settings.audiousername, cw.Camobject.settings.audiopassword, _talkSource);
-                    break;
-            }
-
+            _talkTarget = TalkHelper.GetTalkTarget(cw.Camobject, _talkSource);
             _talkTarget.TalkStopped += TalkTargetTalkStopped;
             _talkTarget.Start();
 
@@ -4480,10 +4473,13 @@ namespace iSpyApplication
             this.tsslPRO = new System.Windows.Forms.ToolStripStatusLabel();
             this._pnlContent = new System.Windows.Forms.Panel();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.flowPreview = new iSpyApplication.Controls.MediaPanel();
             this.flCommands = new System.Windows.Forms.FlowLayoutPanel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this._pnlCameras = new iSpyApplication.Controls.LayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.mediaPanelControl1 = new iSpyApplication.Controls.MediaPanelControl();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.ctxtPlayer = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.iSpyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -4495,9 +4491,6 @@ namespace iSpyApplication
             this.archiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this._pnlCameras = new iSpyApplication.Controls.LayoutPanel();
-            this.mediaPanelControl1 = new iSpyApplication.Controls.MediaPanelControl();
-            this.flowPreview = new iSpyApplication.Controls.MediaPanel();
             this.ctxtMainForm.SuspendLayout();
             this.toolStripMenu.SuspendLayout();
             this.ctxtMnu.SuspendLayout();
@@ -5578,7 +5571,8 @@ namespace iSpyApplication
             this._showFilesToolStripMenuItem,
             this._deleteToolStripMenuItem});
             this.ctxtMnu.Name = "_ctxtMnu";
-            this.ctxtMnu.Size = new System.Drawing.Size(240, 356);
+            this.ctxtMnu.Size = new System.Drawing.Size(240, 378);
+            this.ctxtMnu.Opening += new System.ComponentModel.CancelEventHandler(this.ctxtMnu_Opening);
             // 
             // pluginCommandsToolStripMenuItem
             // 
@@ -5987,6 +5981,21 @@ namespace iSpyApplication
             this.splitContainer2.SplitterDistance = 630;
             this.splitContainer2.TabIndex = 88;
             // 
+            // flowPreview
+            // 
+            this.flowPreview.AutoScroll = true;
+            this.flowPreview.BackColor = System.Drawing.Color.Transparent;
+            this.flowPreview.ContextMenuStrip = this.ctxtMainForm;
+            this.flowPreview.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowPreview.Location = new System.Drawing.Point(0, 0);
+            this.flowPreview.Margin = new System.Windows.Forms.Padding(0);
+            this.flowPreview.Name = "flowPreview";
+            this.flowPreview.Size = new System.Drawing.Size(630, 186);
+            this.flowPreview.TabIndex = 0;
+            this.flowPreview.MouseDown += new System.Windows.Forms.MouseEventHandler(this.flowPreview_MouseDown);
+            this.flowPreview.MouseEnter += new System.EventHandler(this.flowPreview_MouseEnter);
+            this.flowPreview.MouseLeave += new System.EventHandler(this.flowPreview_MouseLeave);
+            // 
             // flCommands
             // 
             this.flCommands.AutoScroll = true;
@@ -6030,14 +6039,42 @@ namespace iSpyApplication
             this.splitContainer1.SplitterDistance = 471;
             this.splitContainer1.TabIndex = 21;
             // 
+            // _pnlCameras
+            // 
+            this._pnlCameras.AutoScroll = true;
+            this._pnlCameras.AutoSize = true;
+            this._pnlCameras.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this._pnlCameras.BackColor = System.Drawing.Color.DimGray;
+            this._pnlCameras.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this._pnlCameras.ContextMenuStrip = this.ctxtMainForm;
+            this._pnlCameras.Dock = System.Windows.Forms.DockStyle.Fill;
+            this._pnlCameras.Location = new System.Drawing.Point(0, 0);
+            this._pnlCameras.Margin = new System.Windows.Forms.Padding(0);
+            this._pnlCameras.Name = "_pnlCameras";
+            this._pnlCameras.Size = new System.Drawing.Size(887, 471);
+            this._pnlCameras.TabIndex = 19;
+            this._pnlCameras.Scroll += new System.Windows.Forms.ScrollEventHandler(this._pnlCameras_Scroll);
+            // 
             // panel1
             // 
             this.panel1.AutoSize = true;
             this.panel1.Controls.Add(this.mediaPanelControl1);
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(284, 32);
+            this.panel1.Size = new System.Drawing.Size(314, 32);
             this.panel1.TabIndex = 22;
+            // 
+            // mediaPanelControl1
+            // 
+            this.mediaPanelControl1.AutoSize = true;
+            this.mediaPanelControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mediaPanelControl1.Location = new System.Drawing.Point(0, 0);
+            this.mediaPanelControl1.Margin = new System.Windows.Forms.Padding(0);
+            this.mediaPanelControl1.Name = "mediaPanelControl1";
+            this.mediaPanelControl1.Padding = new System.Windows.Forms.Padding(0, 0, 0, 2);
+            this.mediaPanelControl1.Size = new System.Drawing.Size(314, 32);
+            this.mediaPanelControl1.TabIndex = 21;
+            this.mediaPanelControl1.Load += new System.EventHandler(this.mediaPanelControl1_Load);
             // 
             // ctxtPlayer
             // 
@@ -6052,7 +6089,7 @@ namespace iSpyApplication
             this.saveToToolStripMenuItem,
             this.deleteToolStripMenuItem});
             this.ctxtPlayer.Name = "ctxPlayer";
-            this.ctxtPlayer.Size = new System.Drawing.Size(186, 224);
+            this.ctxtPlayer.Size = new System.Drawing.Size(186, 202);
             this.ctxtPlayer.Opening += new System.ComponentModel.CancelEventHandler(this.ctxtPlayer_Opening);
             // 
             // iSpyToolStripMenuItem
@@ -6117,49 +6154,6 @@ namespace iSpyApplication
             this.deleteToolStripMenuItem.Size = new System.Drawing.Size(185, 22);
             this.deleteToolStripMenuItem.Text = "Delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
-            // 
-            // _pnlCameras
-            // 
-            this._pnlCameras.AutoScroll = true;
-            this._pnlCameras.AutoSize = true;
-            this._pnlCameras.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this._pnlCameras.BackColor = System.Drawing.Color.DimGray;
-            this._pnlCameras.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this._pnlCameras.ContextMenuStrip = this.ctxtMainForm;
-            this._pnlCameras.Dock = System.Windows.Forms.DockStyle.Fill;
-            this._pnlCameras.Location = new System.Drawing.Point(0, 0);
-            this._pnlCameras.Margin = new System.Windows.Forms.Padding(0);
-            this._pnlCameras.Name = "_pnlCameras";
-            this._pnlCameras.Size = new System.Drawing.Size(887, 471);
-            this._pnlCameras.TabIndex = 19;
-            this._pnlCameras.Scroll += new System.Windows.Forms.ScrollEventHandler(this._pnlCameras_Scroll);
-            // 
-            // mediaPanelControl1
-            // 
-            this.mediaPanelControl1.AutoSize = true;
-            this.mediaPanelControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mediaPanelControl1.Location = new System.Drawing.Point(0, 0);
-            this.mediaPanelControl1.Margin = new System.Windows.Forms.Padding(0);
-            this.mediaPanelControl1.Name = "mediaPanelControl1";
-            this.mediaPanelControl1.Padding = new System.Windows.Forms.Padding(0, 0, 0, 2);
-            this.mediaPanelControl1.Size = new System.Drawing.Size(284, 32);
-            this.mediaPanelControl1.TabIndex = 21;
-            this.mediaPanelControl1.Load += new System.EventHandler(this.mediaPanelControl1_Load);
-            // 
-            // flowPreview
-            // 
-            this.flowPreview.AutoScroll = true;
-            this.flowPreview.BackColor = System.Drawing.Color.Transparent;
-            this.flowPreview.ContextMenuStrip = this.ctxtMainForm;
-            this.flowPreview.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowPreview.Location = new System.Drawing.Point(0, 0);
-            this.flowPreview.Margin = new System.Windows.Forms.Padding(0);
-            this.flowPreview.Name = "flowPreview";
-            this.flowPreview.Size = new System.Drawing.Size(630, 186);
-            this.flowPreview.TabIndex = 0;
-            this.flowPreview.MouseDown += new System.Windows.Forms.MouseEventHandler(this.flowPreview_MouseDown);
-            this.flowPreview.MouseEnter += new System.EventHandler(this.flowPreview_MouseEnter);
-            this.flowPreview.MouseLeave += new System.EventHandler(this.flowPreview_MouseLeave);
             // 
             // MainForm
             // 
@@ -6497,6 +6491,14 @@ namespace iSpyApplication
         private void tsslPRO_Click(object sender, EventArgs e)
         {
             OpenUrl(Website + "/downloadpro.aspx");
+        }
+
+        private void ctxtMnu_Opening(object sender, CancelEventArgs e)
+        {
+            _deleteToolStripMenuItem.Visible = _editToolStripMenuItem.Visible = Helper.HasFeature(Enums.Features.Edit);
+            _viewMediaOnAMobileDeviceToolStripMenuItem.Visible =
+                _viewMediaToolStripMenuItem.Visible =
+                    _showFilesToolStripMenuItem.Visible = Helper.HasFeature(Enums.Features.Access_Media);
         }
     }
 }

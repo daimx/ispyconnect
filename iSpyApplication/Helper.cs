@@ -50,6 +50,7 @@ namespace iSpyApplication
         {
             if (!Directory.Exists(destFolder))
                 Directory.CreateDirectory(destFolder);
+
             string[] files = Directory.GetFiles(sourceFolder);
             foreach (string file in files)
             {

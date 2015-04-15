@@ -159,8 +159,7 @@ namespace iSpyApplication.Controls
 
                     if ((ModifierKeys & Keys.Shift) == Keys.Shift)
                     {
-                        if (TopLevelControl != null)
-                            ((MainForm)TopLevelControl).SelectMediaRange(this, (PreviewBox)(Parent.Tag));
+                        MainForm.InstanceReference.SelectMediaRange(this, (PreviewBox)(Parent.Tag));
                     }
                     else
                     {
@@ -220,14 +219,12 @@ namespace iSpyApplication.Controls
                         }
                         else
                         {
-                            if (TopLevelControl != null)
-                                ((MainForm) TopLevelControl).Connect(url, false);
+                            MainForm.InstanceReference.Connect(url, false);
                         }
                     }
                     break;
                 case Enums.PlaybackMode.iSpy:
-                    if (TopLevelControl != null)
-                        ((MainForm)TopLevelControl).Play(movie, Oid, DisplayName);
+                        MainForm.InstanceReference.Play(movie, Oid, DisplayName);
                     break;
                 case Enums.PlaybackMode.Default:
                     try

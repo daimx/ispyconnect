@@ -41,7 +41,7 @@ namespace iSpyApplication
                 sourceIndex = 4;
             if (tcAudioSource.SelectedTab.Equals(tabPage6))
                 sourceIndex = 5;
-           
+          
             return sourceIndex;
         }
         private void Finish()
@@ -91,6 +91,7 @@ namespace iSpyApplication
                     Mic.settings.bits = 16;
                     break;
                 case 2:
+                {
                     string t = cmbVLCURL.Text.Trim();
                     if (t == String.Empty)
                     {
@@ -98,7 +99,7 @@ namespace iSpyApplication
                         return;
                     }
                     Mic.settings.sourcename = t;
-                    
+                }
                     break;
                 case 3:
                     try
@@ -115,7 +116,7 @@ namespace iSpyApplication
                 case 5:
                     if (ddlCloneMicrophone.SelectedIndex > -1)
                     {
-                        int micid = ((MainForm.ListItem2)ddlCloneMicrophone.SelectedItem).Value;
+                        int micid = ((MainForm.ListItem2) ddlCloneMicrophone.SelectedItem).Value;
                         Mic.settings.sourcename = micid.ToString(CultureInfo.InvariantCulture);
                         var mic = MainForm.Microphones.First(p => p.id == micid);
                         Mic.name = "Clone: " + mic.name;
@@ -126,6 +127,7 @@ namespace iSpyApplication
                         return;
                     }
                     break;
+                break;
             }
 
             MainForm.Conf.VLCURL = cmbVLCURL.Text.Trim();

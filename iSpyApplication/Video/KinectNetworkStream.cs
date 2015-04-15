@@ -491,7 +491,7 @@ namespace iSpyApplication.Video
                 WebResponse response = null;
                 // stream for MJPEG downloading
                 Stream stream = null;
-                // boundary betweeen images (string and binary versions)
+                // boundary between images (string and binary versions)
 
                 try
                 {

@@ -1153,7 +1153,8 @@ namespace iSpyApplication
                         {
                             if (Directory.Exists(olddir))
                             {
-                                Helper.CopyFolder(olddir, newdir);
+                                if (MessageBox.Show(this,"Copy Files?",LocRm.GetString("Confirm"),MessageBoxButtons.YesNo)== DialogResult.Yes)
+                                    Helper.CopyFolder(olddir, newdir);
                             }
                             else
                             {
@@ -1170,7 +1171,8 @@ namespace iSpyApplication
                                 case DialogResult.Yes:
                                     if (Directory.Exists(olddir))
                                     {
-                                        Helper.CopyFolder(olddir,newdir);
+                                        if (MessageBox.Show(this, "Copy Files?", LocRm.GetString("Confirm"), MessageBoxButtons.YesNo) == DialogResult.Yes)
+                                            Helper.CopyFolder(olddir,newdir);
                                     }
                                     else
                                     {
@@ -2440,18 +2442,26 @@ namespace iSpyApplication
 
         private void PopulateTalkDevices()
         {
-            var models = new [] {"None", "Local Playback","Axis", "Foscam", "iSpyServer", "NetworkKinect"};
+            var models = new [] {"None", "Local Playback","Axis", "Foscam", "iSpyServer", "NetworkKinect", "IP Webcam (Android)"};
             foreach(string m in models)
             {
                 ddlTalkModel.Items.Add(m);
             }
-            ddlTalkModel.SelectedItem = CameraControl.Camobject.settings.audiomodel;
+            try
+            {
+                ddlTalkModel.SelectedItem = CameraControl.Camobject.settings.audiomodel;
+            }
+            catch (Exception ex)
+            {
+                //method missing...
+
+            }
         }
 
         private void linkLabel13_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             string lang = MainForm.Conf.Language;
-            MainClass.ShowSettings(5,this);
+            MainClass.ShowSettings(6,this);
             if (lang != MainForm.Conf.Language)
                 RenderResources();
         }

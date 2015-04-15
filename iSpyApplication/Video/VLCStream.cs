@@ -33,7 +33,6 @@ namespace iSpyApplication.Video
         IMediaPlayerFactory _mFactory;
         IMedia _mMedia;
         IVideoPlayer _mPlayer;
-        AudioCallbacks _ac;
 
         private Thread _thread;
         private ManualResetEvent _stopEvent;
@@ -327,21 +326,15 @@ namespace iSpyApplication.Video
 
             var fc = new Func<SoundFormat, SoundFormat>(SoundFormatCallback);
             _mPlayer.CustomAudioRenderer.SetFormatCallback(fc);
-            if (_ac == null)
-            {
-                _ac = new AudioCallbacks { SoundCallback = SoundCallback };
-                GC.KeepAlive(_ac);
-            }
+            var ac = new AudioCallbacks { SoundCallback = SoundCallback };
 
-            _mPlayer.CustomAudioRenderer.SetCallbacks(_ac);
+            _mPlayer.CustomAudioRenderer.SetCallbacks(ac);
             _mPlayer.CustomAudioRenderer.SetExceptionHandler(Handler);
 
             _mPlayer.CustomRenderer.SetCallback(FrameCallback);
             _mPlayer.CustomRenderer.SetExceptionHandler(Handler);
             GC.KeepAlive(_mPlayer);
             
-
-
             _needsSetup = true;
             _stopping = false;
             _mPlayer.CustomRenderer.SetFormat(new BitmapFormat(FormatWidth, FormatHeight, ChromaType.RV24));

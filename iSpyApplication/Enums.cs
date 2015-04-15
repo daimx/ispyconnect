@@ -43,7 +43,7 @@ namespace iSpyApplication
         }
 
         [Flags]
-        public enum Features
+        public enum Features: long
         {  
             ALL_FEATURES =      1,
             IPCameras =         2,
@@ -74,8 +74,8 @@ namespace iSpyApplication
             Storage =           67108864,
             Settings =          134217728,
             Grid_Views =        268435456,
-            Logs =              536870912
-                                
+            Logs =              536870912,
+            Edit =              1073741824
         }
 
     }

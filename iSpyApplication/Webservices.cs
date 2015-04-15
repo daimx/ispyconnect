@@ -37,6 +37,7 @@ namespace iSpyApplication
             MainForm.Conf.ServerPort = port;
             MainForm.Conf.LANPort = localport;
             MainForm.MWS.NumErr = 0;
+            MainForm.Conf.SpecificIP = chkBindSpecific.Checked;
 
             switch (tcIPMode.SelectedIndex)
             {
@@ -116,6 +117,8 @@ namespace iSpyApplication
                 Application.DoEvents();
                 
                 MainForm.Conf.DHCPReroute = chkReroute.Checked;
+                MainForm.Conf.SpecificIP = chkBindSpecific.Checked;
+
                 bool failed = false;
 
 
@@ -258,6 +261,7 @@ namespace iSpyApplication
             txtPort.Text = MainForm.Conf.LANPort.ToString(CultureInfo.InvariantCulture);
             chkReroute.Checked = MainForm.Conf.DHCPReroute;
             chkEnableIPv6.Checked = !MainForm.Conf.IPv6Disabled;
+            chkBindSpecific.Checked = MainForm.Conf.SpecificIP;
 
             chkuPNP.Checked = MainForm.Conf.UseUPNP;
             if (!chkuPNP.Checked)

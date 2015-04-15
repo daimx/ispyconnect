@@ -58,11 +58,16 @@ namespace iSpyApplication
                     }
                 }
 
+                MemoryStream stream = null;
                 if (attach != null && attach.Length>0)
                 {
-                    var attachFile = new Attachment(new MemoryStream(attach), "Screenshot.jpg");
+                    stream = new MemoryStream(attach) {Position = 0};
+
+                    var attachFile = new Attachment(stream, "Screenshot.jpg",
+                        System.Net.Mime.MediaTypeNames.Image.Jpeg);
 
                     myMessage.Attachments.Add(attachFile);
+                    
                 }
 
                 var emailClient = new SmtpClient(MainForm.Conf.SMTPServer, MainForm.Conf.SMTPPort)
@@ -75,6 +80,8 @@ namespace iSpyApplication
 
                 emailClient.Send(myMessage);
 
+                if (stream!=null)
+                    stream.Dispose();
                 myMessage.Dispose();
                 myMessage = null;
                 emailClient.Dispose();

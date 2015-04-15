@@ -6,11 +6,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Services;
-using Google.Apis.YouTube.v3;
 using iSpyApplication.Cloud;
 using iSpyApplication.Server;
 using Microsoft.Win32;
@@ -184,7 +180,6 @@ namespace iSpyApplication
                 LocRm.Reset();
             }
             MainForm.Conf.Language = lang;
-
             if (chkStartup.Checked)
             {
                 try
@@ -323,9 +318,7 @@ namespace iSpyApplication
             _rkApp = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", false);
             chkStartup.Checked = (_rkApp != null && _rkApp.GetValue("iSpy") != null);
 
-            mediaDirectoryEditor1.Init(MainForm.Conf.MediaDirectories);
-            
-            
+            mediaDirectoryEditor1.Init(MainForm.Conf.MediaDirectories);           
 
             btnDetectColor.BackColor = MainForm.Conf.ActivityColor.ToColor();
             btnNoDetectColor.BackColor = MainForm.Conf.NoActivityColor.ToColor();

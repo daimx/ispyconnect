@@ -25,8 +25,7 @@ namespace iSpyApplication.Controls
         {
             if (e.KeyCode==Keys.Delete)
             {
-                var topLevelControl = (MainForm) TopLevelControl;
-                if (topLevelControl != null) topLevelControl.MediaDeleteSelected();
+                MainForm.InstanceReference.MediaDeleteSelected();
             }
         }
 

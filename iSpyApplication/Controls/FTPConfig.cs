@@ -48,13 +48,11 @@ namespace iSpyApplication.Controls
         private void btnSaveFTP_Click(object sender, EventArgs e)
         {
             FTP.name = txtServerName.Text;
-            FTP.server = txtFTPServer.Text;
             FTP.sftp = chkSFTP.Checked;
 
-            if (!FTP.sftp && txtFTPServer.Text.IndexOf("/", StringComparison.Ordinal) == -1)
-            {
-                txtFTPServer.Text = "ftp://" + txtFTPServer.Text;
-            }
+            CleanData();
+
+            FTP.server = txtFTPServer.Text;
 
             FTP.username = txtFTPUsername.Text;
             FTP.password = txtFTPPassword.Text;
@@ -83,15 +81,7 @@ namespace iSpyApplication.Controls
                         Resources.cam_offline.Save(imageStream, ImageFormat.Jpeg);
 
                         string error;
-                        txtFTPServer.Text = txtFTPServer.Text.Trim('/');
-                        bool sftp = chkSFTP.Checked;
-                        if (!sftp)
-                        {
-                            if (txtFTPServer.Text.IndexOf("://", StringComparison.Ordinal) == -1)
-                            {
-                                txtFTPServer.Text = "ftp://" + txtFTPServer.Text;
-                            }
-                        }
+                        CleanData();
 
                         string fn = String.Format(CultureInfo.InvariantCulture, _testloc, Helper.Now);
                         int port = (int) txtFTPPort.Value;
@@ -111,6 +101,27 @@ namespace iSpyApplication.Controls
                         MessageBox.Show(ex.Message);
                     }
                     imageStream.Close();
+                }
+            }
+        }
+
+        private void CleanData()
+        {
+            txtFTPServer.Text = txtFTPServer.Text.Trim('/');
+            bool sftp = chkSFTP.Checked;
+            if (!sftp)
+            {
+                if (txtFTPServer.Text.IndexOf("://", StringComparison.Ordinal) == -1)
+                {
+                    txtFTPServer.Text = "ftp://" + txtFTPServer.Text;
+                }
+            }
+            else
+            {
+                int i = txtFTPServer.Text.IndexOf("://", StringComparison.Ordinal);
+                if (i != -1 && i + 3 < txtFTPServer.Text.Length)
+                {
+                    txtFTPServer.Text = txtFTPServer.Text.Substring(i + 3);
                 }
             }
         }

@@ -698,7 +698,6 @@ namespace iSpyApplication
                             VideoInputIndex = _availableVideoInputs[videoInputsCombo.SelectedIndex-1].Index;
                         }
                     }
-                    
 
                     VideoSourceString = _videoDeviceMoniker;
                     break;
@@ -1368,6 +1367,23 @@ namespace iSpyApplication
                 }
                 SetupVideoSource();
 
+                if (fc.AudioSourceType>-1)
+                {
+                    var vc = CameraControl.VolumeControl;
+                    if (vc == null)
+                    {
+                        vc = MainForm.InstanceReference.AddCameraMicrophone(CameraControl.Camobject.id, CameraControl.Camobject.name + " mic");
+                        CameraControl.Camobject.settings.micpair = vc.Micobject.id;
+                        vc.Micobject.alerts.active = false;
+                        vc.Micobject.detector.recordonalert = false;
+                        vc.Micobject.detector.recordondetect = false;
+                        CameraControl.SetVolumeLevel(vc.Micobject.id);
+                    }
+                    vc.Disable();
+                    vc.Micobject.settings.typeindex = fc.AudioSourceType;
+                    vc.Micobject.settings.sourcename = fc.AudioUrl;
+
+                }
                 
             }
             fc.Dispose();

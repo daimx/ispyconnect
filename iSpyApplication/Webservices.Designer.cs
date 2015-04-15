@@ -65,6 +65,7 @@ namespace iSpyApplication
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.chkEnableIPv6 = new System.Windows.Forms.CheckBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.chkBindSpecific = new System.Windows.Forms.CheckBox();
             this.tcIPMode.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
@@ -255,7 +256,7 @@ namespace iSpyApplication
             this.tcIPMode.Controls.Add(this.tabPage1);
             this.tcIPMode.Controls.Add(this.tabPage2);
             this.tcIPMode.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tcIPMode.Location = new System.Drawing.Point(3, 206);
+            this.tcIPMode.Location = new System.Drawing.Point(3, 248);
             this.tcIPMode.Name = "tcIPMode";
             this.tcIPMode.SelectedIndex = 0;
             this.tcIPMode.Size = new System.Drawing.Size(385, 195);
@@ -446,7 +447,7 @@ namespace iSpyApplication
             // 
             this.label5.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.label5, 3);
-            this.label5.Location = new System.Drawing.Point(6, 410);
+            this.label5.Location = new System.Drawing.Point(6, 452);
             this.label5.Margin = new System.Windows.Forms.Padding(6);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(378, 26);
@@ -491,35 +492,37 @@ namespace iSpyApplication
             this.tableLayoutPanel1.Controls.Add(this.label6, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.label1, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.txtUsername, 2, 1);
-            this.tableLayoutPanel1.Controls.Add(this.label5, 0, 8);
-            this.tableLayoutPanel1.Controls.Add(this.tcIPMode, 0, 7);
+            this.tableLayoutPanel1.Controls.Add(this.label5, 0, 9);
+            this.tableLayoutPanel1.Controls.Add(this.chkBindSpecific, 1, 6);
+            this.tableLayoutPanel1.Controls.Add(this.tcIPMode, 0, 8);
             this.tableLayoutPanel1.Controls.Add(this.label2, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.txtPassword, 2, 2);
             this.tableLayoutPanel1.Controls.Add(this.label4, 0, 4);
             this.tableLayoutPanel1.Controls.Add(this.linkLabel1, 2, 3);
             this.tableLayoutPanel1.Controls.Add(this.lblIPAddresses, 1, 5);
-            this.tableLayoutPanel1.Controls.Add(this.chkEnableIPv6, 1, 6);
+            this.tableLayoutPanel1.Controls.Add(this.chkEnableIPv6, 1, 7);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(6, 6);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 9;
+            this.tableLayoutPanel1.RowCount = 10;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 31F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(391, 442);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(391, 484);
             this.tableLayoutPanel1.TabIndex = 65;
             // 
             // chkEnableIPv6
             // 
             this.chkEnableIPv6.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.chkEnableIPv6, 2);
-            this.chkEnableIPv6.Location = new System.Drawing.Point(76, 183);
+            this.chkEnableIPv6.Location = new System.Drawing.Point(76, 225);
             this.chkEnableIPv6.Name = "chkEnableIPv6";
             this.chkEnableIPv6.Size = new System.Drawing.Size(124, 17);
             this.chkEnableIPv6.TabIndex = 46;
@@ -534,11 +537,22 @@ namespace iSpyApplication
             this.flowLayoutPanel1.Controls.Add(this.button2);
             this.flowLayoutPanel1.Controls.Add(this.llblHelp);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(6, 477);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(6, 520);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.flowLayoutPanel1.Size = new System.Drawing.Size(391, 37);
             this.flowLayoutPanel1.TabIndex = 46;
+            // 
+            // chkBindSpecific
+            // 
+            this.chkBindSpecific.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.chkBindSpecific, 2);
+            this.chkBindSpecific.Location = new System.Drawing.Point(76, 194);
+            this.chkBindSpecific.Name = "chkBindSpecific";
+            this.chkBindSpecific.Size = new System.Drawing.Size(154, 17);
+            this.chkBindSpecific.TabIndex = 47;
+            this.chkBindSpecific.Text = "Bind to Specific IP Address";
+            this.chkBindSpecific.UseVisualStyleBackColor = true;
             // 
             // Webservices
             // 
@@ -546,7 +560,7 @@ namespace iSpyApplication
             this.AutoScroll = true;
             this.AutoSize = true;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(403, 520);
+            this.ClientSize = new System.Drawing.Size(403, 563);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.flowLayoutPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
@@ -617,5 +631,6 @@ namespace iSpyApplication
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
         private System.Windows.Forms.NumericUpDown txtWANPort;
         private System.Windows.Forms.CheckBox chkEnableIPv6;
+        private System.Windows.Forms.CheckBox chkBindSpecific;
     }
 }

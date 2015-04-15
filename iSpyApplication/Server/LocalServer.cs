@@ -112,6 +112,23 @@ namespace iSpyApplication.Server
                 }
             }
         }
+        private IPAddress ListenerAddress
+        {
+            get
+            {
+                switch (MainForm.Conf.IPMode)
+                {
+                    case "IPv6":
+                        if (!MainForm.Conf.SpecificIP)
+                            return IPAddress.IPv6Any;
+                        return IPAddress.Parse(MainForm.AddressIPv6);
+                    default:
+                        if (!MainForm.Conf.SpecificIP)
+                            return IPAddress.Any;
+                        return IPAddress.Parse(MainForm.AddressIPv4);
+                }
+            }
+        }
 
         public string StartServer()
         {
@@ -121,15 +138,10 @@ namespace iSpyApplication.Server
             string message = "";
             try
             {
-                if (MainForm.Conf.IPMode=="IPv6")
+                _myListener = new TcpListener(ListenerAddress, MainForm.Conf.LANPort) { ExclusiveAddressUse = false };
+                if (MainForm.Conf.IPMode == "IPv6")
                 {
-                    _myListener = new TcpListener(IPAddress.IPv6Any, MainForm.Conf.LANPort) { ExclusiveAddressUse = false };
-                     _myListener.AllowNatTraversal(true);
-                }
-                else
-                {
-                    _myListener = new TcpListener(IPAddress.Any, MainForm.Conf.LANPort)
-                                        {ExclusiveAddressUse = false};
+                    _myListener.AllowNatTraversal(true);
                 }
                 _myListener.Start(200);
             }
@@ -3938,89 +3950,56 @@ namespace iSpyApplication.Server
         private void AudioIn(HttpRequest req, int cameraId)
         {
             CameraWindow cw = _parent.GetCameraWindow(cameraId);
-
-            ITalkTarget talkTarget = null;
             var ds = new AudioInStream { RecordingFormat = new WaveFormat(22050, 16, 1) };
-
-            switch (cw.Camobject.settings.audiomodel)
-            {
-                case "Foscam":
-                    ds.Interval = 40;
-                    ds.PacketSize = 882; // (40ms packet at 22050 bytes per second)
-                    talkTarget = new TalkFoscam(cw.Camobject.settings.audioip, cw.Camobject.settings.audioport,
-                                                cw.Camobject.settings.audiousername,
-                                                cw.Camobject.settings.audiopassword, ds);
-                    break;
-                case "NetworkKinect":
-                    ds.Interval = 40;
-                    ds.PacketSize = 882;
-                    talkTarget = new TalkNetworkKinect(cw.Camobject.settings.audioip, cw.Camobject.settings.audioport, ds);
-                    break;
-                case "iSpyServer":
-                    ds.Interval = 40;
-                    ds.PacketSize = 882;
-                    talkTarget = new TalkiSpyServer(cw.Camobject.settings.audioip,
-                                                    cw.Camobject.settings.audioport,
-                                                    ds);
-                    break;
-                case "Axis":
-                    talkTarget = new TalkAxis(cw.Camobject.settings.audioip, cw.Camobject.settings.audioport,
-                                              cw.Camobject.settings.audiousername,
-                                              cw.Camobject.settings.audiopassword, ds);
-                    break;
-                default:
-                    //local playback
-                    talkTarget = new TalkLocal(ds);
-                    break;
-            }
+            ITalkTarget talkTarget = TalkHelper.GetTalkTarget(cw.Camobject, ds); 
             
-                ds.Start();
-                talkTarget.Start();
-                ds.PacketSize = 4410;
-                var bBuffer = new byte[ds.PacketSize*4];
-                //IWavePlayer WaveOut = new DirectSoundOut(100);
-                //WaveOut.Init(ds.WaveOutProvider);
-                //WaveOut.Play();
-                try
+            ds.Start();
+            talkTarget.Start();
+            ds.PacketSize = 4410;
+            var bBuffer = new byte[ds.PacketSize*4];
+            //IWavePlayer WaveOut = new DirectSoundOut(100);
+            //WaveOut.Init(ds.WaveOutProvider);
+            //WaveOut.Play();
+            try
+            {
+                int j = 0;
+                //DateTime dtStart = Helper.Now;
+                bool pktComplete = false;
+                DateTime dt = Helper.Now;
+                while (req.TcpClient.Client.Connected) // && talkTarget.Connected)
                 {
-                    int j = 0;
-                    //DateTime dtStart = Helper.Now;
-                    bool pktComplete = false;
-                    DateTime dt = Helper.Now;
-                    while (req.TcpClient.Client.Connected) // && talkTarget.Connected)
+                    while (!pktComplete && req.TcpClient.Client.Connected)
                     {
-                        while (!pktComplete && req.TcpClient.Client.Connected)
+                        // DateTime sR = Helper.Now;
+
+                        int i = req.TcpClient.Client.Receive(bBuffer, j, ds.PacketSize, SocketFlags.None);
+                        if (i == 0)
+                            goto Finish;
+                        j += i;
+                        while (j >= ds.PacketSize)
                         {
-                           // DateTime sR = Helper.Now;
+                            var data = new byte[ds.PacketSize];
+                            Buffer.BlockCopy(bBuffer, 0, data, 0, ds.PacketSize);
+                            ds.AddSamples(data);
+                            int ms = Convert.ToInt32((Helper.Now - dt).TotalMilliseconds);
+                            if (ms < 40)
+                                Thread.Sleep(40 - ms);
+                            dt = Helper.Now;
+                            pktComplete = true;
+                            Buffer.BlockCopy(bBuffer, ds.PacketSize, bBuffer, 0, j - ds.PacketSize);
+                            j = j - ds.PacketSize;
 
-                            int i = req.TcpClient.Client.Receive(bBuffer, j, ds.PacketSize, SocketFlags.None);
-                            if (i == 0)
-                                goto Finish;
-                            j += i;
-                            while (j >= ds.PacketSize)
-                            {
-                                var data = new byte[ds.PacketSize];
-                                Buffer.BlockCopy(bBuffer, 0, data, 0, ds.PacketSize);
-                                ds.AddSamples(data);
-                                int ms = Convert.ToInt32((Helper.Now - dt).TotalMilliseconds);
-                                if (ms < 40)
-                                    Thread.Sleep(40 - ms);
-                                dt = Helper.Now;
-                                pktComplete = true;
-                                Buffer.BlockCopy(bBuffer, ds.PacketSize, bBuffer, 0, j - ds.PacketSize);
-                                j = j - ds.PacketSize;
-
-                            }
                         }
-                        pktComplete = false;
-
-                        //Thread.Sleep(50);
                     }
+                    pktComplete = false;
+
+                    //Thread.Sleep(50);
                 }
-                catch
-                {
-                    
-                }
+            }
+            catch(Exception ex)
+            {
+                MainForm.LogExceptionToFile(ex,"Talk (network)");
+            }
             Finish:
                 DisconnectRequest(req);
                 ds.Stop();

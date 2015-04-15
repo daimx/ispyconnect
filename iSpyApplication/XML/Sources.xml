@@ -1431,7 +1431,7 @@
     <url version="Other" confirmed="false" prefix="http://" Source="JPEG" url="shot.jpg" AudioModel="" port="" flags="" cookies="" />
     <url version="Samsung" confirmed="false" prefix="http://" Source="JPEG" url="shot.jpg" AudioModel="" port="" flags="" cookies="" />
     <url version="ipcam" confirmed="false" prefix="http://" Source="MJPEG" url="videofeed" AudioModel="" port="" flags="" cookies="" />
-    <url version="Ip Webcam for Android" confirmed="false" prefix="http://" Source="MJPEG" url="videofeed" AudioModel="" port="" flags="" cookies="" />
+    <url version="Ip Webcam for Android" confirmed="false" prefix="http://" Source="MJPEG" url="videofeed" AudioModel="" port="" flags="" cookies="" AudioSource="FFMPEG" AudioURL="audio.wav" />
     <url version="Android IP Camera Bedroom" confirmed="false" prefix="http://" Source="MJPEG" url="videofeed" AudioModel="" port="" flags="" cookies="" />
     <url version="Andoid IP Camera" confirmed="false" prefix="http://" Source="MJPEG" url="videofeed" AudioModel="" port="" flags="" cookies="" />
     <url version="IPAndoid" confirmed="false" prefix="http://" Source="MJPEG" url="videofeed" AudioModel="" port="" flags="" cookies="" />
@@ -10637,21 +10637,9 @@
     <url version="Other" confirmed="false" prefix="http://" Source="MJPEG" url="videostream.cgi?" AudioModel="" port="" flags="" cookies="" />
     <url version="Ebay" confirmed="false" prefix="http://" Source="MJPEG" url="videostream.cgi?" AudioModel="" port="" flags="" cookies="" />
   </Manufacturer>
-  <Manufacturer name="IP webcam">
-    <url version="Other" confirmed="false" prefix="http://" Source="FFMPEG" url="videostream.asf?user=[USERNAME]&amp;pwd=[PASSWORD]&amp;resolution=64&amp;rate=0" AudioModel="" port="" flags="" cookies="" />
-    <url version="android" confirmed="false" prefix="http://" Source="MJPEG" url="videofeed" AudioModel="" port="" flags="" cookies="" />
-    <url version="Other" confirmed="false" prefix="http://" Source="MJPEG" url="nphMotionJpeg?Resolution=320x240&amp;Quality=Motion" AudioModel="" port="" flags="" cookies="" />
-  </Manufacturer>
-  <Manufacturer name="IP Webcam Android">
-    <url version="merit" confirmed="false" prefix="http://" Source="MJPEG" url="videofeed" AudioModel="" port="" flags="" cookies="" />
-    <url version="Other" confirmed="false" prefix="http://" Source="MJPEG" url="videofeed" AudioModel="" port="" flags="" cookies="" />
-    <url version="Hoo Too1" confirmed="false" prefix="http://" Source="MJPEG" url="videostream.cgi?" AudioModel="" port="" flags="" cookies="" />
-    <url version="Other" confirmed="false" prefix="http://" Source="MJPEG" url="videostream.cgi?" AudioModel="" port="" flags="" cookies="" />
-    <url version="Other" confirmed="false" prefix="http://" Source="MJPEG" url="video?profile=[CHANNEL]" AudioModel="" port="" flags="" cookies="" />
-    <url version="Other" confirmed="false" prefix="http://" Source="MJPEG" url="video?submenu=mjpg" AudioModel="" port="" flags="" cookies="" />
-    <url version="TransformerPrime" confirmed="false" prefix="http://" Source="MJPEG" url="videofeed" AudioModel="" port="" flags="" cookies="" />
-    <url version="RazrMaxx" confirmed="false" prefix="http://" Source="MJPEG" url="videofeed" AudioModel="" port="" flags="" cookies="" />
-    <url version="Razr Maxx" confirmed="false" prefix="http://" Source="MJPEG" url="videofeed" AudioModel="" port="" flags="" cookies="" />
+  <Manufacturer name="IP webcam (Android)">
+    <url version="Generic" confirmed="false" prefix="http://" Source="MJPEG" url="video" AudioModel="" port="" flags="" cookies="" AudioSource="FFMPEG" AudioURL="audio.wav" />
+    <url version="Generic" confirmed="false" prefix="http://" Source="JPEG" url="shot.jpg" AudioModel="" port="" flags="" cookies=""  AudioSource="FFMPEG" AudioURL="audio.wav" />
   </Manufacturer>
   <Manufacturer name="IP Webcam EVO 3D">
     <url version="EVO 3D" confirmed="false" prefix="http://" Source="MJPEG" url="video?submenu=mjpg" AudioModel="" port="" flags="" cookies="" />

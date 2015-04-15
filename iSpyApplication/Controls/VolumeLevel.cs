@@ -1524,18 +1524,18 @@ namespace iSpyApplication.Controls
             {
                 _stopWrite.Reset();
 
-                if (!String.IsNullOrEmpty(Micobject.recorder.trigger) && TopLevelControl != null)
+                if (!String.IsNullOrEmpty(Micobject.recorder.trigger))
                 {
                     string[] tid = Micobject.recorder.trigger.Split(',');
                     switch (tid[0])
                     {
                         case "1":
-                            VolumeLevel vl = ((MainForm) TopLevelControl).GetVolumeLevel(Convert.ToInt32(tid[1]));
+                            VolumeLevel vl = MainForm.InstanceReference.GetVolumeLevel(Convert.ToInt32(tid[1]));
                             if (vl != null && !vl.Recording)
                                 vl.RecordSwitch(true);
                             break;
                         case "2":
-                            CameraWindow c = ((MainForm) TopLevelControl).GetCameraWindow(Convert.ToInt32(tid[1]));
+                            CameraWindow c = MainForm.InstanceReference.GetCameraWindow(Convert.ToInt32(tid[1]));
                             if (c != null && !c.Recording)
                                 c.RecordSwitch(true);
                             break;
@@ -1729,18 +1729,18 @@ namespace iSpyApplication.Controls
                         ErrorHandler(ex.Message);
                 }
 
-                if (!String.IsNullOrEmpty(Micobject.recorder.trigger) && TopLevelControl != null)
+                if (!String.IsNullOrEmpty(Micobject.recorder.trigger))
                 {
                     string[] tid = Micobject.recorder.trigger.Split(',');
                     switch (tid[0])
                     {
                         case "1":
-                            VolumeLevel vl = ((MainForm) TopLevelControl).GetVolumeLevel(Convert.ToInt32(tid[1]));
+                            VolumeLevel vl = MainForm.InstanceReference.GetVolumeLevel(Convert.ToInt32(tid[1]));
                             if (vl != null)
                                 vl.RecordSwitch(false);
                             break;
                         case "2":
-                            CameraWindow c = ((MainForm) TopLevelControl).GetCameraWindow(Convert.ToInt32(tid[1]));
+                            CameraWindow c = MainForm.InstanceReference.GetCameraWindow(Convert.ToInt32(tid[1]));
                             if (c != null)
                                 c.RecordSwitch(false);
                             break;
@@ -1843,17 +1843,14 @@ namespace iSpyApplication.Controls
                         int imic;
                         if (Int32.TryParse(Micobject.settings.sourcename, out imic))
                         {
-                            var topLevelControl = (MainForm) TopLevelControl;
-                            if (topLevelControl != null)
-                            {
-                                var vl = topLevelControl.GetVolumeLevel(imic);
+                            
+                                var vl = MainForm.InstanceReference.GetVolumeLevel(imic);
                                 if (vl != null)
                                 {
                                     vl.AudioDeviceDisabled -= MicrophoneDisabled;
                                     vl.AudioDeviceEnabled -= MicrophoneEnabled;
                                     vl.AudioDeviceReConnected -= MicrophoneReconnected;
                                 }
-                            }
                         }
                     }
 
@@ -1995,10 +1992,8 @@ namespace iSpyApplication.Controls
                                     {
                                         //cloned feed
                                         int icam = Convert.ToInt32(CameraControl.Camobject.settings.videosourcestring);
-                                        var topLevelControl = (MainForm) TopLevelControl;
-                                        if (topLevelControl != null)
-                                        {
-                                            var cw = topLevelControl.GetCameraWindow(icam);
+                                        
+                                            var cw = MainForm.InstanceReference.GetCameraWindow(icam);
                                             if (cw != null)
                                             {
                                                 if (CameraControl != null && CameraControl.VolumeControl != null &&
@@ -2007,7 +2002,6 @@ namespace iSpyApplication.Controls
                                                     AudioSource = cw.VolumeControl.AudioSource;
                                                 }
                                             }
-                                        }
                                     }
                                 }
                                 if (AudioSource != null && AudioSource.RecordingFormat != null)
@@ -2029,10 +2023,8 @@ namespace iSpyApplication.Controls
                         int imic;
                         if (Int32.TryParse(Micobject.settings.sourcename, out imic))
                         {
-                            var topLevelControl = (MainForm)TopLevelControl;
-                            if (topLevelControl != null)
-                            {
-                                var vl = topLevelControl.GetVolumeLevel(imic);
+                            
+                                var vl = MainForm.InstanceReference.GetVolumeLevel(imic);
                                 if (vl != null)
                                 {
                                     AudioSource = vl.AudioSource;
@@ -2050,7 +2042,6 @@ namespace iSpyApplication.Controls
                                     vl.AudioDeviceEnabled += MicrophoneEnabled;
                                     vl.AudioDeviceReConnected += MicrophoneReconnected;
                                 }
-                            }
 
                         }
                         if (AudioSource == null)
@@ -2329,8 +2320,7 @@ namespace iSpyApplication.Controls
                         {
                             if (param1.ToLower() == "ispy.exe" || param1.ToLower() == "ispy")
                             {
-                                var topLevelControl = (MainForm)TopLevelControl;
-                                if (topLevelControl != null) topLevelControl.ProcessCommandString(param2);
+                                MainForm.InstanceReference.ProcessCommandString(param2);
                             }
                             else
                             {
@@ -2491,77 +2481,71 @@ namespace iSpyApplication.Controls
                         Console.Beep();
                         break;
                     case "M":
-                        if (TopLevelControl != null)
-                        {
-                            var mf = ((MainForm)TopLevelControl);
-                            mf.Maximise(this, false);
-                        }
+                        MainForm.InstanceReference.Maximise(this, false);
+                        
                         break;
                     case "TA":
                         {
-                            if (TopLevelControl != null)
+                            
+                            string[] tid = param1.Split(',');
+                            switch (tid[0])
                             {
-                                string[] tid = param1.Split(',');
-                                switch (tid[0])
-                                {
-                                    case "1":
-                                        VolumeLevel vl = ((MainForm)TopLevelControl).GetVolumeLevel(Convert.ToInt32(tid[1]));
-                                        if (vl != null && vl != this) //prevent recursion
-                                            vl.MicrophoneAlarm(this, EventArgs.Empty);
-                                        break;
-                                    case "2":
-                                        CameraWindow cw = ((MainForm)TopLevelControl).GetCameraWindow(Convert.ToInt32(tid[1]));
-                                        if (cw != null)
-                                            cw.CameraAlarm(this, EventArgs.Empty);
-                                        break;
-                                }
+                                case "1":
+                                    VolumeLevel vl = MainForm.InstanceReference.GetVolumeLevel(Convert.ToInt32(tid[1]));
+                                    if (vl != null && vl != this) //prevent recursion
+                                        vl.MicrophoneAlarm(this, EventArgs.Empty);
+                                    break;
+                                case "2":
+                                    CameraWindow cw = MainForm.InstanceReference.GetCameraWindow(Convert.ToInt32(tid[1]));
+                                    if (cw != null)
+                                        cw.CameraAlarm(this, EventArgs.Empty);
+                                    break;
                             }
+                            
                         }
                         break;
                     case "SOO":
                         {
-                            if (TopLevelControl != null)
+                            
+                            string[] tid = param1.Split(',');
+                            switch (tid[0])
                             {
-                                string[] tid = param1.Split(',');
-                                switch (tid[0])
-                                {
-                                    case "1":
-                                        VolumeLevel vl =
-                                            ((MainForm)TopLevelControl).GetVolumeLevel(Convert.ToInt32(tid[1]));
-                                        if (vl != null)
-                                            vl.Enable();
-                                        break;
-                                    case "2":
-                                        CameraWindow cw =
-                                            ((MainForm)TopLevelControl).GetCameraWindow(Convert.ToInt32(tid[1]));
-                                        if (cw != null)
-                                            cw.Enable();
-                                        break;
-                                }
+                                case "1":
+                                    VolumeLevel vl =
+                                        MainForm.InstanceReference.GetVolumeLevel(Convert.ToInt32(tid[1]));
+                                    if (vl != null)
+                                        vl.Enable();
+                                    break;
+                                case "2":
+                                    CameraWindow cw =
+                                        MainForm.InstanceReference.GetCameraWindow(Convert.ToInt32(tid[1]));
+                                    if (cw != null)
+                                        cw.Enable();
+                                    break;
                             }
+
                         }
                         break;
                     case "SOF":
                         {
-                            if (TopLevelControl != null)
-                            {
+                            
                                 string[] tid = param1.Split(',');
                                 switch (tid[0])
                                 {
                                     case "1":
                                         VolumeLevel vl =
-                                            ((MainForm)TopLevelControl).GetVolumeLevel(Convert.ToInt32(tid[1]));
+                                            MainForm.InstanceReference.GetVolumeLevel(Convert.ToInt32(tid[1]));
                                         if (vl != null)
                                             vl.Disable();
                                         break;
                                     case "2":
                                         CameraWindow cw =
-                                            ((MainForm)TopLevelControl).GetCameraWindow(Convert.ToInt32(tid[1]));
+                                            MainForm.InstanceReference.GetCameraWindow(Convert.ToInt32(tid[1]));
                                         if (cw != null)
                                             cw.Disable();
                                         break;
                                 }
-                            }
+
                         }
                         break;
                     case "E":
@@ -2686,13 +2670,11 @@ namespace iSpyApplication.Controls
                 ofp.needsupdate = true;
                 if (isAlert)
                 {
-                    if (TopLevelControl != null)
-                    {
-                        FloorPlanControl fpc = ((MainForm) TopLevelControl).GetFloorPlan(ofp.id);
+                    
+                        FloorPlanControl fpc = MainForm.InstanceReference.GetFloorPlan(ofp.id);
                         fpc.LastAlertTimestamp = Helper.Now.UnixTicks();
                         fpc.LastOid = Micobject.id;
                         fpc.LastOtid = 1;
-                    }
                 }
             }
         }

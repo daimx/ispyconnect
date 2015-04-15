@@ -111,8 +111,7 @@ namespace iSpyApplication.Controls
 
         protected override void OnMouseDoubleClick(MouseEventArgs e)
         {
-            if (LayoutTarget != null)
-                if (LayoutTarget.TopLevelControl != null) ((MainForm) LayoutTarget.TopLevelControl).ShowIfUnlocked();
+            MainForm.InstanceReference.ShowIfUnlocked();
             base.OnMouseDoubleClick(e);
         }
 

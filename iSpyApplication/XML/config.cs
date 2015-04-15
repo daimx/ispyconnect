@@ -136,6 +136,8 @@ public partial class configuration {
     
     private string iPv6AddressField;
     
+    private bool specificIPField;
+    
     private bool dHCPRerouteField;
     
     private string mediaDirectoryField;
@@ -302,6 +304,8 @@ public partial class configuration {
     
     private string encryptCodeField;
     
+    private int portMapperModeField;
+    
     private configurationLogging loggingField;
     
     private configurationServer[] fTPServersField;
@@ -318,6 +322,7 @@ public partial class configuration {
         this.wSPasswordEncryptedField = false;
         this.maxRecordingThreadsField = 4;
         this.useUPNPField = true;
+        this.specificIPField = false;
         this.dHCPRerouteField = true;
         this.mediaDirectoryField = "NotSet";
         this.cPUMaxField = 90;
@@ -383,6 +388,7 @@ public partial class configuration {
         this.vLCFileCacheField = 3000;
         this.referersField = "";
         this.encryptCodeField = "";
+        this.portMapperModeField = 2;
     }
     
     /// <remarks/>
@@ -942,6 +948,16 @@ public partial class configuration {
         }
         set {
             this.iPv6AddressField = value;
+        }
+    }
+    
+    /// <remarks/>
+    public bool SpecificIP {
+        get {
+            return this.specificIPField;
+        }
+        set {
+            this.specificIPField = value;
         }
     }
     
@@ -1772,6 +1788,16 @@ public partial class configuration {
         }
         set {
             this.encryptCodeField = value;
+        }
+    }
+    
+    /// <remarks/>
+    public int PortMapperMode {
+        get {
+            return this.portMapperModeField;
+        }
+        set {
+            this.portMapperModeField = value;
         }
     }
     
