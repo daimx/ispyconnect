@@ -1382,7 +1382,7 @@ namespace iSpyApplication
                     vc.Disable();
                     vc.Micobject.settings.typeindex = fc.AudioSourceType;
                     vc.Micobject.settings.sourcename = fc.AudioUrl;
-
+                    vc.Micobject.settings.needsupdate = true;
                 }
                 
             }
