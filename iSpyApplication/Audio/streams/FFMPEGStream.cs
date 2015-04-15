@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading;
+using System.Windows.Forms;
 using AForge.Video;
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
@@ -8,7 +8,7 @@ using AudioFileReader = iSpy.Video.FFMPEG.AudioFileReader;
 
 namespace iSpyApplication.Audio.streams
 {
-    class FFMPEGAudioStream: IAudioSource
+    class FFMPEGAudioStream : IAudioSource
     {
         private string _source;
         private bool _listening;
@@ -119,7 +119,7 @@ namespace iSpyApplication.Audio.streams
 
                 if (WaveOutProvider != null)
                 {
-                    if (WaveOutProvider.BufferedBytes>0) WaveOutProvider.ClearBuffer();
+                    if (WaveOutProvider.BufferedBytes > 0) WaveOutProvider.ClearBuffer();
                     WaveOutProvider = null;
                 }
 
@@ -137,7 +137,6 @@ namespace iSpyApplication.Audio.streams
         }
 
 
-        private volatile bool _isrunning;
         /// <summary>
         /// State of the video source.
         /// </summary>
@@ -148,7 +147,7 @@ namespace iSpyApplication.Audio.streams
         {
             get
             {
-                return _isrunning;
+                return _thread != null && !_thread.Join(TimeSpan.Zero);
             }
         }
 
@@ -187,15 +186,15 @@ namespace iSpyApplication.Audio.streams
                 throw new ArgumentException("Audio source is not specified.");
 
             _stopEvent = new ManualResetEvent(false);
-            
+
             _thread = new Thread(FfmpegListener)
-                        {
-                            Name = "FFMPEG Audio Receiver (" + _source + ")"
-                        };
+            {
+                Name = "FFMPEG Audio Receiver (" + _source + ")"
+            };
             _thread.Start();
             //_stopped = false;
 
-                        
+
         }
 
         public string Cookies = "";
@@ -207,29 +206,29 @@ namespace iSpyApplication.Audio.streams
 
         private void FfmpegListener()
         {
-            _isrunning = true;
             _reasonToStop = ReasonToFinishPlaying.StoppedByUser;
             _afr = null;
             bool open = false;
             string errmsg = "";
-            
+
             try
             {
                 Program.FFMPEGMutex.WaitOne();
                 _afr = new AudioFileReader();
                 int i = _source.IndexOf("://", StringComparison.Ordinal);
-                if (i>-1)
+                if (i > -1)
                 {
                     _source = _source.Substring(0, i).ToLower() + _source.Substring(i);
                 }
                 _afr.Timeout = Timeout;
                 _afr.AnalyzeDuration = AnalyseDuration;
                 _afr.Open(_source);
+
                 open = true;
             }
             catch (Exception ex)
             {
-                MainForm.LogErrorToFile(ex.Message);
+                MainForm.LogExceptionToFile(ex, "FFMPEG");
             }
             finally
             {
@@ -252,32 +251,31 @@ namespace iSpyApplication.Audio.streams
 
             RecordingFormat = new WaveFormat(_afr.SampleRate, 16, _afr.Channels);
             _waveProvider = new BufferedWaveProvider(RecordingFormat) { DiscardOnBufferOverflow = true, BufferDuration = TimeSpan.FromMilliseconds(500) };
-            
+
             _sampleChannel = new SampleChannel(_waveProvider);
             _sampleChannel.PreVolumeMeter += SampleChannelPreVolumeMeter;
 
             int mult = _afr.BitsPerSample / 8;
             double btrg = Convert.ToDouble(_afr.SampleRate * mult * _afr.Channels);
-            LastFrame = Helper.Now;
+            LastFrame = DateTime.UtcNow;
             bool realTime = !IsFileSource;
 
             try
             {
-                DateTime req = Helper.Now;
+                DateTime req = DateTime.UtcNow;
                 while (!_stopEvent.WaitOne(10, false) && !MainForm.Reallyclose)
                 {
                     byte[] data = _afr.ReadAudioFrame();
-                    if (data==null || data.Equals(0))
+                    if (data == null || data.Equals(0))
                     {
                         if (!realTime)
                         {
                             break;
                         }
                     }
-                    if (data!=null && data.Length > 0)
+                    if (data != null && data.Length > 0)
                     {
-                        LastFrame = Helper.Now;
-                        //Debug.WriteLine("Got Audio Frame: "+LastFrame);
+                        LastFrame = DateTime.UtcNow;
                         var da = DataAvailable;
                         if (da != null)
                         {
@@ -286,14 +284,14 @@ namespace iSpyApplication.Audio.streams
 
                             var sampleBuffer = new float[data.Length];
                             _sampleChannel.Read(sampleBuffer, 0, data.Length);
-                            
+
                             da(this, new DataAvailableEventArgs((byte[])data.Clone()));
 
-                            if (WaveOutProvider!=null && Listening)
+                            if (WaveOutProvider != null && Listening)
                             {
                                 WaveOutProvider.AddSamples(data, 0, data.Length);
                             }
-                            
+
                         }
 
                         if (realTime)
@@ -304,33 +302,33 @@ namespace iSpyApplication.Audio.streams
                         else
                         {
                             //
-                            double f = (data.Length/btrg)*1000;
+                            double f = (data.Length / btrg) * 1000;
                             if (f > 0)
                             {
-                                var span = Helper.Now.Subtract(req);
-                                var msec = Convert.ToInt32(f - (int) span.TotalMilliseconds);
+                                var span = DateTime.UtcNow.Subtract(req);
+                                var msec = Convert.ToInt32(f - (int)span.TotalMilliseconds);
                                 if ((msec > 0) && (_stopEvent.WaitOne(msec, false)))
                                     break;
-                                req = Helper.Now;
+                                req = DateTime.UtcNow;
                             }
                         }
                     }
                     else
                     {
-                        if ((Helper.Now - LastFrame).TotalMilliseconds > Timeout)
+                        if ((DateTime.UtcNow - LastFrame).TotalMilliseconds > Timeout)
                         {
                             throw new Exception("Audio source timeout");
                         }
                         if (_stopEvent.WaitOne(30, false))
                             break;
                     }
-                    
+
                 }
-                
+
             }
             catch (Exception e)
             {
-                MainForm.LogExceptionToFile(e);
+                MainForm.LogExceptionToFile(e, "FFMPEG");
                 errmsg = e.Message;
             }
 
@@ -354,41 +352,27 @@ namespace iSpyApplication.Audio.streams
             bool err = !String.IsNullOrEmpty(errmsg);
             if (err)
             {
-                
+
                 _reasonToStop = ReasonToFinishPlaying.DeviceLost;
             }
 
             if (IsFileSource && !err)
                 _reasonToStop = ReasonToFinishPlaying.EndOfStreamReached;
 
-            try
+            if (_afr != null && _afr.IsOpen)
             {
-                _afr.Dispose();//calls close!
-            }
-            catch (Exception ex)
-            {
-                MainForm.LogExceptionToFile(ex);
+                try
+                {
+                    _afr.Dispose(); //calls close
+                }
+                catch (Exception ex)
+                {
+                    MainForm.LogExceptionToFile(ex, "FFMPEG");
+                }
             }
 
-            // release events
-            if (_stopEvent != null)
-            {
-                _stopEvent.Close();
-                _stopEvent.Dispose();
-                _stopEvent = null;
-            }
-            _stopEvent = null;
-            
             if (AudioFinished != null)
                 AudioFinished(this, _reasonToStop);
-
-            if (_waveProvider != null)
-            {
-                if (_waveProvider.BufferedBytes > 0)
-                    _waveProvider.ClearBuffer();
-            }
-
-            _isrunning = false;
         }
 
 
@@ -400,7 +384,6 @@ namespace iSpyApplication.Audio.streams
             }
         }
 
-        private bool _stopping;
         /// <summary>
         /// Stop audio source.
         /// </summary>
@@ -410,40 +393,20 @@ namespace iSpyApplication.Audio.streams
         /// 
         public void Stop()
         {
-            if (IsRunning && !_stopping)
+            if (IsRunning)
             {
-                _stopping = true;
-
-                if (ThreadAlive)
+                // wait for thread stop
+                _stopEvent.Set();
+                try
                 {
-                    if (_stopEvent != null)
-                    {
-                        //if stopEvent is null the thread is exiting and stop has been called from a related event //bastard!
-                        _stopEvent.Set();
-                        try
-                        {
-                            while (IsRunning)
-                            {
-                                _thread.Join(0);
-                            }
-                        }
-                        catch
-                        {
-
-                        }
-                    }
+                    while (_thread != null && !_thread.Join(0))
+                        Application.DoEvents();
                 }
+                catch { }
 
-                Listening = false;
-                _stopping = false;
-            }
-        }
-
-        private bool ThreadAlive
-        {
-            get
-            {
-                return _thread != null && !_thread.Join(TimeSpan.Zero);
+                _stopEvent.Close();
+                _stopEvent.Dispose();
+                _stopEvent = null;
             }
         }
 
