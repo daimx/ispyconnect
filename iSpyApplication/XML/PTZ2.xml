@@ -5593,6 +5593,7 @@ copy or delete as many lines as you need.-->
   <Camera id="207">
     <Makes>
       <Make Name="IP Webcam (Android)" Model="Generic" />
+      <Make Name="Android Ip Webcam" Model="Generic" />
     </Makes>
     <CommandURL>/</CommandURL>
     <Commands>

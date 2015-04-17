@@ -106,6 +106,7 @@ public partial class ManufacturersManufacturerUrl {
     private string audioURLField;
     
     public ManufacturersManufacturerUrl() {
+        this.confirmedField = "false";
         this.fixedField = false;
     }
     
@@ -122,6 +123,7 @@ public partial class ManufacturersManufacturerUrl {
     
     /// <remarks/>
     [System.Xml.Serialization.XmlAttributeAttribute()]
+    [System.ComponentModel.DefaultValueAttribute("false")]
     public string confirmed {
         get {
             return this.confirmedField;

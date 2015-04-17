@@ -9,7 +9,7 @@
                             <xs:element maxOccurs="unbounded" name="url">
                                 <xs:complexType>
                                     <xs:attribute name="version" type="xs:string" use="required" />
-                                    <xs:attribute name="confirmed" type="xs:string" use="required" />
+                                    <xs:attribute name="confirmed" type="xs:string" default="false" use="optional" />
                                     <xs:attribute name="prefix" type="xs:string" use="required" />
                                     <xs:attribute name="Source" type="xs:string" use="required" />
                                     <xs:attribute name="url" type="xs:string" use="required" />
