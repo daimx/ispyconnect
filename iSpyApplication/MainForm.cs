@@ -83,7 +83,7 @@ namespace iSpyApplication
         public static string IPCHANNEL = "0";
         public static string IPMODEL = "";
         public static string IPUN = "";
-        public static string IPPORTS = "80";
+        public static string IPPORTS = "80,8080";
         public static int IPPORT = 80;
         public static string IPPASS = "";
         public static string IPTYPE = "";

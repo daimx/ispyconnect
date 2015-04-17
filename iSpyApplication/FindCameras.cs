@@ -184,7 +184,7 @@ namespace iSpyApplication
                         ports.Add(p);
                 }
             }
-            pbScanner.Value = 0;
+            UISync.Execute(() => pbScanner.Value = 0);
 
             var manualEvents = new ManualResetEvent[MaxThreads];
             int j;
@@ -1005,7 +1005,7 @@ namespace iSpyApplication
         {
             var d = new downloader
                         {
-                            Url = MainForm.Website + "/getcontent.aspx?name=sources",
+                            Url = MainForm.Website + "/getcontent.aspx?name=sources2",
                             SaveLocation = Program.AppDataPath + @"XML\Sources.xml"
                         };
             d.ShowDialog(this);
