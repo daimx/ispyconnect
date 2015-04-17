@@ -17,6 +17,7 @@ namespace iSpyApplication.Audio.streams
             _bufferLength = bufferLength;
         }
 
+
         /// <summary>
         /// The WaveFormat of this stream
         /// </summary>

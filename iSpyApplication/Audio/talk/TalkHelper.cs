@@ -1,4 +1,5 @@
-﻿using iSpyApplication.Audio.streams;
+﻿using System;
+using iSpyApplication.Audio.streams;
 
 namespace iSpyApplication.Audio.talk
 {
@@ -30,7 +31,7 @@ namespace iSpyApplication.Audio.talk
                         cam.settings.audiousername, cam.settings.audiopassword, source);
                     break;
                 case "IP Webcam (Android)":
-                    talkTarget = new TalkIPWebcamAndroid(cam.settings.videosourcestring, source);
+                    talkTarget = new TalkIPWebcamAndroid(new Uri(cam.settings.videosourcestring), source);
                     break;
             }
             return talkTarget;

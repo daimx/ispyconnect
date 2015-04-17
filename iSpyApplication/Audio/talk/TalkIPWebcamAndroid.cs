@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Net;
 using System.Net.Sockets;
 using iSpyApplication.Audio.streams;
 using NAudio.Wave;
@@ -11,26 +9,15 @@ namespace iSpyApplication.Audio.talk
     internal class TalkIPWebcamAndroid: ITalkTarget
     {
         private readonly object _obj = new object();
-        private readonly string _server;
-        private BinaryWriter _avstream;
         private bool _bTalking;
-        private readonly WaveFormat _waveFormat = new WaveFormat(8000, 16, 1);
+        private readonly WaveFormat _waveFormat = new WaveFormat(44100, 16, 1);
         private readonly IAudioSource _audioSource;
+        private readonly Uri _server;
+        private NetworkStream _avstream;
 
-        public TalkIPWebcamAndroid(string url, IAudioSource audioSource)
+        public TalkIPWebcamAndroid(Uri server,IAudioSource audioSource)
         {
-            string audioURL = url;
-            int j = audioURL.LastIndexOf("/", StringComparison.Ordinal);
-            if (j > -1)
-            {
-                audioURL = audioURL.Substring(0, j) + "/audioin.alaw";
-            }
-            else
-            {
-                //no valid url
-                MainForm.LogErrorToFile("No valid URL to talk to sorry!");
-            }
-            _server = audioURL;
+            _server = server;
             _audioSource = audioSource;
         }
 
@@ -38,10 +25,12 @@ namespace iSpyApplication.Audio.talk
         {
             try
             {
-                var httpWebRequest = (HttpWebRequest)WebRequest.Create(_server);
-                httpWebRequest.ContentType = "application/octet-stream";
-                httpWebRequest.Method = "POST";
-                _avstream = new BinaryWriter(httpWebRequest.GetRequestStream());
+                var tcp = new TcpClient(_server.Host, _server.Port);
+                _avstream = tcp.GetStream();
+
+                string hdr = "POST /audioin.alaw HTTP/1.1\r\nHost: "+_server.Host+"\r\nContent-Length: 2147483637\r\n\r\n";
+                _avstream.Write(System.Text.Encoding.UTF8.GetBytes(hdr), 0, hdr.Length);
+
                 StartTalk();
             }
             catch (Exception ex)
@@ -52,6 +41,7 @@ namespace iSpyApplication.Audio.talk
             }
         }
         
+
         public void Stop()
         {
             StopTalk();
@@ -70,8 +60,10 @@ namespace iSpyApplication.Audio.talk
             {
                 StopTalk();
             }
-            _audioSource.DataAvailable += AudioSourceDataAvailable;
+            
             _bTalking = true;
+            _bTalking = true;
+            _audioSource.DataAvailable += AudioSourceDataAvailable;
         }
 
         private void StopTalk()
@@ -98,7 +90,7 @@ namespace iSpyApplication.Audio.talk
                 }
             }
         }
-        
+
         private void AudioSourceDataAvailable(object sender, DataAvailableEventArgs e)
         {
             try
@@ -112,20 +104,30 @@ namespace iSpyApplication.Audio.talk
 
                         if (!_audioSource.RecordingFormat.Equals(_waveFormat))
                         {
-                            var ws = new TalkHelperStream(bSrc, totBytes, _audioSource.RecordingFormat);
-                            var helpStm = new WaveFormatConversionStream(_waveFormat, ws);
-                            totBytes = helpStm.Read(bSrc, 0, 25000);
-                            ws.Close();
-                            ws.Dispose();
-                            helpStm.Close();
-                            helpStm.Dispose();
+                            using (var ws = new TalkHelperStream(bSrc, totBytes, _audioSource.RecordingFormat))
+                            {
+                                int j = -1;
+                                var bDst = new byte[44100];
+                                totBytes = 0;
+                                using (var helpStm = new WaveFormatConversionStream(_waveFormat, ws))
+                                {
+                                    while (j != 0)
+                                    {
+                                        j = helpStm.Read(bDst, totBytes, 10000);
+                                        totBytes += j;
+                                    }
+                                    helpStm.Close();
+                                }
+                                ws.Close();
+                                bSrc = bDst;
+                            }
                         }
                         var enc = new byte[totBytes / 2];
                         ALawEncoder.ALawEncode(bSrc, totBytes, enc);
 
-                        try {
+                        try
+                        {
                             _avstream.Write(enc, 0, enc.Length);
-                            _avstream.Flush();
                         }
                         catch (SocketException)
                         {

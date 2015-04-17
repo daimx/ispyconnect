@@ -85,10 +85,10 @@ namespace iSpyApplication.Audio.talk
             byte[] hdr = Encoding.ASCII.GetBytes(sPost);
             _avstream.Write(hdr, 0, hdr.Length);
 
-            _audioSource.DataAvailable += AudioSourceDataAvailable;
             _talkBuffer = new byte[2500];
             _talkDatalen = 0;
             _bTalking = true;
+            _audioSource.DataAvailable += AudioSourceDataAvailable;
         }
 
         public bool Connected
@@ -145,26 +145,36 @@ namespace iSpyApplication.Audio.talk
                     {
                         byte[] bSrc = e.RawData;
                         int totBytes = bSrc.Length;
-
+                        int j = -1;
                         if (!_audioSource.RecordingFormat.Equals(_waveFormat))
                         {
-                            using (var helper = new TalkHelperStream(bSrc, totBytes, _audioSource.RecordingFormat))
+                            using (var ws = new TalkHelperStream(bSrc, totBytes, _audioSource.RecordingFormat))
                             {
-                                using (var helpStm = new WaveFormatConversionStream(_waveFormat, helper))
+                                
+                                var bDst = new byte[44100];
+                                totBytes = 0;
+                                using (var helpStm = new WaveFormatConversionStream(_waveFormat, ws))
                                 {
-                                    totBytes = helpStm.Read(bSrc, 0, 25000);
+                                    while (j != 0)
+                                    {
+                                        j = helpStm.Read(bDst, totBytes, 10000);
+                                        totBytes += j;
+                                    }
+                                    helpStm.Close();
                                 }
+                                ws.Close();
+                                bSrc = bDst;
                             }
                         }
                         var enc = _muLawCodec.Encode(bSrc, 0, totBytes);
-                        ALawEncoder.ALawEncode(bSrc, totBytes, enc);
+                        //ALawEncoder.ALawEncode(bSrc, totBytes, enc);
 
 
                         Buffer.BlockCopy(enc, 0, _talkBuffer, _talkDatalen, enc.Length);
                         _talkDatalen += enc.Length;
 
                         
-                        int j = 0;
+                        j = 0;
                         try
                         {
                             while (j + 240 < _talkDatalen)

@@ -102,13 +102,23 @@ namespace iSpyApplication.Audio.talk
 
                         if (!_audioSource.RecordingFormat.Equals(_waveFormat))
                         {
-                            var ws = new TalkHelperStream(bSrc, totBytes, _audioSource.RecordingFormat);
-                            var helpStm = new WaveFormatConversionStream(_waveFormat, ws);
-                            totBytes = helpStm.Read(bSrc, 0, 25000);
-                            ws.Close();
-                            ws.Dispose();
-                            helpStm.Close();
-                            helpStm.Dispose();
+                            using (var ws = new TalkHelperStream(bSrc, totBytes, _audioSource.RecordingFormat))
+                            {
+                                int j = -1;
+                                var bDst = new byte[44100];
+                                totBytes = 0;
+                                using (var helpStm = new WaveFormatConversionStream(_waveFormat, ws))
+                                {
+                                    while (j != 0)
+                                    {
+                                        j = helpStm.Read(bDst, totBytes, 10000);
+                                        totBytes += j;
+                                    }
+                                    helpStm.Close();
+                                }
+                                ws.Close();
+                                bSrc = bDst;
+                            }
                         }
                         var enc = new byte[totBytes / 2];
                         ALawEncoder.ALawEncode(bSrc, totBytes, enc);

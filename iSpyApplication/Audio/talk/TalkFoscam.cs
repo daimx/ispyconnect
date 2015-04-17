@@ -251,17 +251,26 @@ namespace iSpyApplication.Audio.talk
                     {
                         byte[] bSrc = e.RawData;
                         int totBytes = bSrc.Length;
-
+                        int j = -1;
                         if (!_audioSource.RecordingFormat.Equals(_waveFormat))
                         {
-                            var ws = new TalkHelperStream(bSrc, totBytes, _audioSource.RecordingFormat);
-                            var helpStm = new WaveFormatConversionStream(_waveFormat, ws);
-                            totBytes = helpStm.Read(bSrc, 0, 25000);
-
-                            ws.Close();
-                            ws.Dispose();
-                            helpStm.Close();
-                            helpStm.Dispose();
+                            using (var ws = new TalkHelperStream(bSrc, totBytes, _audioSource.RecordingFormat))
+                            {
+                                
+                                var bDst = new byte[44100];
+                                totBytes = 0;
+                                using (var helpStm = new WaveFormatConversionStream(_waveFormat, ws))
+                                {
+                                    while (j != 0)
+                                    {
+                                        j = helpStm.Read(bDst, totBytes, 10000);
+                                        totBytes += j;
+                                    }
+                                    helpStm.Close();
+                                }
+                                ws.Close();
+                                bSrc = bDst;
+                            }
                         }
 
                         if (_needsencodeinit)
@@ -287,7 +296,7 @@ namespace iSpyApplication.Audio.talk
 
                         var dtms = (int) (Helper.Now - _dt).TotalMilliseconds;
                         int i = 0;
-                        int j = 0;
+                        j = 0;
                         try
                         {
                             while (j + 160 < _talkDatalen)
