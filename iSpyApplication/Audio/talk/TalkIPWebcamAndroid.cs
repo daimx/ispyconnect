@@ -62,7 +62,6 @@ namespace iSpyApplication.Audio.talk
             }
             
             _bTalking = true;
-            _bTalking = true;
             _audioSource.DataAvailable += AudioSourceDataAvailable;
         }
 

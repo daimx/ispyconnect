@@ -46,9 +46,11 @@ namespace iSpyApplication
             this.lblFormat = new System.Windows.Forms.Label();
             this.label23 = new System.Windows.Forms.Label();
             this.ddlPlayback = new System.Windows.Forms.ComboBox();
+            this.ranger1 = new iSpyApplication.Controls.Ranger();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel8 = new System.Windows.Forms.TableLayoutPanel();
+            this.actionEditor1 = new iSpyApplication.Controls.ActionEditor();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.label89 = new System.Windows.Forms.Label();
             this.ddlActionType = new System.Windows.Forms.ComboBox();
@@ -63,6 +65,7 @@ namespace iSpyApplication
             this.label48 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
+            this.intervalConfig1 = new iSpyApplication.Controls.IntervalConfig();
             this.panel2 = new System.Windows.Forms.Panel();
             this.chkSound = new System.Windows.Forms.CheckBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
@@ -154,9 +157,6 @@ namespace iSpyApplication
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.linkLabel4 = new System.Windows.Forms.LinkLabel();
             this.tmrUpdateSourceDetails = new System.Windows.Forms.Timer(this.components);
-            this.ranger1 = new iSpyApplication.Controls.Ranger();
-            this.actionEditor1 = new iSpyApplication.Controls.ActionEditor();
-            this.intervalConfig1 = new iSpyApplication.Controls.IntervalConfig();
             this.tcMicrophone.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -402,6 +402,19 @@ namespace iSpyApplication
             this.ddlPlayback.TabIndex = 0;
             this.ddlPlayback.SelectedIndexChanged += new System.EventHandler(this.ddlPlayback_SelectedIndexChanged);
             // 
+            // ranger1
+            // 
+            this.tableLayoutPanel1.SetColumnSpan(this.ranger1, 2);
+            this.ranger1.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.ranger1.Gain = 10F;
+            this.ranger1.Location = new System.Drawing.Point(116, 190);
+            this.ranger1.Margin = new System.Windows.Forms.Padding(4);
+            this.ranger1.Name = "ranger1";
+            this.ranger1.Size = new System.Drawing.Size(525, 73);
+            this.ranger1.TabIndex = 97;
+            this.ranger1.ValueMax = 100D;
+            this.ranger1.ValueMin = 0D;
+            // 
             // tabPage2
             // 
             this.tabPage2.AutoScroll = true;
@@ -442,6 +455,15 @@ namespace iSpyApplication
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel8.Size = new System.Drawing.Size(639, 315);
             this.tableLayoutPanel8.TabIndex = 94;
+            // 
+            // actionEditor1
+            // 
+            this.actionEditor1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.actionEditor1.Location = new System.Drawing.Point(4, 35);
+            this.actionEditor1.Margin = new System.Windows.Forms.Padding(4);
+            this.actionEditor1.Name = "actionEditor1";
+            this.actionEditor1.Size = new System.Drawing.Size(631, 260);
+            this.actionEditor1.TabIndex = 92;
             // 
             // flowLayoutPanel1
             // 
@@ -614,6 +636,15 @@ namespace iSpyApplication
             this.label15.Size = new System.Drawing.Size(113, 23);
             this.label15.TabIndex = 47;
             this.label15.Text = "Intervals";
+            // 
+            // intervalConfig1
+            // 
+            this.tableLayoutPanel2.SetColumnSpan(this.intervalConfig1, 3);
+            this.intervalConfig1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.intervalConfig1.Location = new System.Drawing.Point(128, 65);
+            this.intervalConfig1.Name = "intervalConfig1";
+            this.intervalConfig1.Size = new System.Drawing.Size(514, 29);
+            this.intervalConfig1.TabIndex = 78;
             // 
             // panel2
             // 
@@ -1880,37 +1911,6 @@ namespace iSpyApplication
             // 
             this.tmrUpdateSourceDetails.Interval = 2000;
             this.tmrUpdateSourceDetails.Tick += new System.EventHandler(this.tmrUpdateSourceDetails_Tick);
-            // 
-            // ranger1
-            // 
-            this.tableLayoutPanel1.SetColumnSpan(this.ranger1, 2);
-            this.ranger1.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.ranger1.Gain = 10F;
-            this.ranger1.Location = new System.Drawing.Point(116, 190);
-            this.ranger1.Margin = new System.Windows.Forms.Padding(4);
-            this.ranger1.Name = "ranger1";
-            this.ranger1.Size = new System.Drawing.Size(525, 73);
-            this.ranger1.TabIndex = 97;
-            this.ranger1.ValueMax = 100D;
-            this.ranger1.ValueMin = 0D;
-            // 
-            // actionEditor1
-            // 
-            this.actionEditor1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.actionEditor1.Location = new System.Drawing.Point(4, 35);
-            this.actionEditor1.Margin = new System.Windows.Forms.Padding(4);
-            this.actionEditor1.Name = "actionEditor1";
-            this.actionEditor1.Size = new System.Drawing.Size(631, 260);
-            this.actionEditor1.TabIndex = 92;
-            // 
-            // intervalConfig1
-            // 
-            this.tableLayoutPanel2.SetColumnSpan(this.intervalConfig1, 3);
-            this.intervalConfig1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.intervalConfig1.Location = new System.Drawing.Point(128, 65);
-            this.intervalConfig1.Name = "intervalConfig1";
-            this.intervalConfig1.Size = new System.Drawing.Size(514, 29);
-            this.intervalConfig1.TabIndex = 78;
             // 
             // AddMicrophone
             // 

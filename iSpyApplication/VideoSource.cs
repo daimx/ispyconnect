@@ -1367,6 +1367,8 @@ namespace iSpyApplication
                 }
                 SetupVideoSource();
 
+                CameraControl.Camobject.name = FriendlyName;
+
                 if (fc.AudioSourceType>-1)
                 {
                     var vc = CameraControl.VolumeControl;
@@ -1384,7 +1386,7 @@ namespace iSpyApplication
                     vc.Micobject.settings.sourcename = fc.AudioUrl;
                     vc.Micobject.settings.needsupdate = true;
                 }
-                
+                FriendlyName = CameraControl.Camobject.name;
             }
             fc.Dispose();
         }

@@ -528,7 +528,6 @@
     <Translation Token="TsLocation">TS. Location</Translation>
     <Translation Token="Tue">Tue</Translation>
     <Translation Token="Tunnelingipv6">Tunneling (IPv6)</Translation>
-    <Translation Token="DetectorList">Two Frames,Custom Frame,Background Modelling,None</Translation>
     <Translation Token="Unavailable">Unavailable</Translation>
     <Translation Token="Unlock">Unlock</Translation>
     <Translation Token="UnlockPassword">Unlock Password:</Translation>
@@ -1072,7 +1071,6 @@
     <Translation Token="TsLocation">TS. Localización</Translation>
     <Translation Token="Tue">Martes</Translation>
     <Translation Token="Tunnelingipv6">Encapsulado (IPv6)</Translation>
-    <Translation Token="DetectorList">Dos imágenes,Imagen de referencia,Modelado de fondo,Ninguno</Translation>
     <Translation Token="Unavailable">No disponible</Translation>
     <Translation Token="Unlock">Desbloquear</Translation>
     <Translation Token="UnlockPassword">Desbloquear Contraseña:</Translation>
@@ -1644,7 +1642,6 @@
     <Translation Token="TsLocation">TS. Ort</Translation>
     <Translation Token="Tue">Di</Translation>
     <Translation Token="Tunnelingipv6">Tunneling (IPv6)</Translation>
-    <Translation Token="DetectorList">Zwei Bilder, Benutzerdefinierter Rahmen, Hintergrund Modellierung, Keinen</Translation>
     <Translation Token="Unavailable">Nicht verfügbar</Translation>
     <Translation Token="Unlock">Entsperre</Translation>
     <Translation Token="UnlockPassword">Entsperre Password:</Translation>
@@ -2196,7 +2193,6 @@
     <Translation Token="TsLocation">TS. Posizione</Translation>
     <Translation Token="Tue">Mar</Translation>
     <Translation Token="Tunnelingipv6">Tunneling (IPv6)</Translation>
-    <Translation Token="DetectorList">Due cornici, cornice personalizzata, Background Modelling, None</Translation>
     <Translation Token="Unavailable">Non disponibile</Translation>
     <Translation Token="Unlock">Sbloccare</Translation>
     <Translation Token="UnlockPassword">Unlock Password:</Translation>
@@ -2742,7 +2738,6 @@
     <Translation Token="TsLocation">TS. Lieu</Translation>
     <Translation Token="Tue">Mar.</Translation>
     <Translation Token="Tunnelingipv6">Tunneling (IPv6)</Translation>
-    <Translation Token="DetectorList">Deux images, une image personnalisée, modélisation de base, aucun</Translation>
     <Translation Token="Unavailable">Inaccessible</Translation>
     <Translation Token="Unlock">Déverrouillez</Translation>
     <Translation Token="UnlockPassword">Déverrouillez le mot de passe:</Translation>
@@ -3288,7 +3283,6 @@
     <Translation Token="TsLocation">TS. Locatie</Translation>
     <Translation Token="Tue">Di</Translation>
     <Translation Token="Tunnelingipv6">Tunneling (IPv6)</Translation>
-    <Translation Token="DetectorList">Twee frames, Custom frame, achtergrond Modellering, Geen</Translation>
     <Translation Token="Unavailable">Niet beschikbaar</Translation>
     <Translation Token="Unlock">Vrijgeven</Translation>
     <Translation Token="UnlockPassword">Ontgrendel wachtwoord:</Translation>
@@ -3830,7 +3824,6 @@
     <Translation Token="TsLocation">TS. Местоположение</Translation>
     <Translation Token="Tue">Вт</Translation>
     <Translation Token="Tunnelingipv6">Туннелирование (IPv6)</Translation>
-    <Translation Token="DetectorList">Два кадра, Custom рамка, Справочная моделирования Ни</Translation>
     <Translation Token="Unavailable">Недоступные</Translation>
     <Translation Token="Unlock">Отпереть</Translation>
     <Translation Token="UnlockPassword">Открой Пароль:</Translation>
@@ -4372,7 +4365,6 @@
     <Translation Token="TsLocation">TS. Sjediste, mjesto poslovanja</Translation>
     <Translation Token="Tue">Uto</Translation>
     <Translation Token="Tunnelingipv6">Tuneliranje (IPv6)</Translation>
-    <Translation Token="DetectorList">Dva okvira, Definirani okvir, Pozadinsko  modeliranje, Ništa</Translation>
     <Translation Token="Unavailable">Nedostupan</Translation>
     <Translation Token="Unlock">Otključaj</Translation>
     <Translation Token="UnlockPassword">Lozinka za otključavanje:</Translation>
@@ -4914,7 +4906,6 @@
     <Translation Token="TsLocation">徘徊。地点</Translation>
     <Translation Token="Tue">星期二</Translation>
     <Translation Token="Tunnelingipv6">隧道（IPv6）的</Translation>
-    <Translation Token="DetectorList">两个窗口,自定义的框架,背景建模,无</Translation>
     <Translation Token="Unavailable">不可用</Translation>
     <Translation Token="Unlock">開鎖</Translation>
     <Translation Token="UnlockPassword">解锁密码：</Translation>
@@ -5456,7 +5447,6 @@
     <Translation Token="TsLocation">TS. Localização</Translation>
     <Translation Token="Tue">Ter</Translation>
     <Translation Token="Tunnelingipv6">Tunelamento (IPv6)</Translation>
-    <Translation Token="DetectorList">Dois quadros, Frame Custom, Modelação de fundo, None</Translation>
     <Translation Token="Unavailable">Indisponível</Translation>
     <Translation Token="Unlock">Destravar</Translation>
     <Translation Token="UnlockPassword">Desbloquear senha:</Translation>
@@ -6035,7 +6025,6 @@
     <Translation Token="TsLocation">TS. Lokalizacja</Translation>
     <Translation Token="Tue">Wt</Translation>
     <Translation Token="Tunnelingipv6">Tunneling (IPv6)</Translation>
-    <Translation Token="DetectorList">Dwie ramki, Custom Frame, Modelowanie Tło Brak</Translation>
     <Translation Token="Unavailable">Niedostępne</Translation>
     <Translation Token="Unlock">Odblokuj</Translation>
     <Translation Token="UnlockPassword">Odblokuj Hasło:</Translation>
@@ -6577,7 +6566,6 @@
     <Translation Token="TsLocation">TS. Elhelyezkedés</Translation>
     <Translation Token="Tue">K</Translation>
     <Translation Token="Tunnelingipv6">Alagút (IPv6)</Translation>
-    <Translation Token="DetectorList">Két Keretek, egyéni keret, háttér modellezése, None</Translation>
     <Translation Token="Unavailable">Nem érhető el</Translation>
     <Translation Token="Unlock">Kinyit</Translation>
     <Translation Token="UnlockPassword">Unlock Jelszó:</Translation>

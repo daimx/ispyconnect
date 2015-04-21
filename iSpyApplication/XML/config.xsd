@@ -110,7 +110,7 @@
         <xs:element name="StartupForm" type="xs:string" default="iSpy"/>
         <xs:element name="TrayOnMinimise" type="xs:boolean" default="true"/>
         <xs:element name="EnableGZip" type="xs:boolean" default="true"/>
-        <xs:element name="FeatureSet" type="xs:int" default="0"/>
+        <xs:element name="FeatureSet" type="xs:long" default="0"/>
         <xs:element name="MJPEGStreamInterval" type="xs:int" default="100"/>
         <xs:element name="AlertOnDisconnect" type="xs:string" default=""/>
         <xs:element name="AlertOnReconnect" type="xs:string" default=""/>
@@ -267,7 +267,7 @@
               <xsd:element maxOccurs="unbounded" name="group">
                 <xsd:complexType>
                   <xsd:attribute name="name" type="xsd:string" use="required" />
-                  <xsd:attribute name="featureset" type="xsd:int" use="required" />
+                  <xsd:attribute name="featureset" type="xsd:long" use="required" />
                   <xsd:attribute name="password" type="xsd:string" use="required" />
                 </xsd:complexType>
               </xsd:element>

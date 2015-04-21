@@ -238,7 +238,7 @@ public partial class configuration {
     
     private bool enableGZipField;
     
-    private int featureSetField;
+    private long featureSetField;
     
     private int mJPEGStreamIntervalField;
     
@@ -355,7 +355,7 @@ public partial class configuration {
         this.startupFormField = "iSpy";
         this.trayOnMinimiseField = true;
         this.enableGZipField = true;
-        this.featureSetField = 0;
+        this.featureSetField = ((long)(0));
         this.mJPEGStreamIntervalField = 100;
         this.alertOnDisconnectField = "";
         this.alertOnReconnectField = "";
@@ -1462,7 +1462,7 @@ public partial class configuration {
     }
     
     /// <remarks/>
-    public int FeatureSet {
+    public long FeatureSet {
         get {
             return this.featureSetField;
         }
@@ -2787,7 +2787,7 @@ public partial class configurationGroup {
     
     private string nameField;
     
-    private int featuresetField;
+    private long featuresetField;
     
     private string passwordField;
     
@@ -2804,7 +2804,7 @@ public partial class configurationGroup {
     
     /// <remarks/>
     [System.Xml.Serialization.XmlAttributeAttribute()]
-    public int featureset {
+    public long featureset {
         get {
             return this.featuresetField;
         }

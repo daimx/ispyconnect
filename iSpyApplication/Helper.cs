@@ -29,7 +29,7 @@ namespace iSpyApplication
             return ((1 & FeatureSet) != 0) || (((int)feature & FeatureSet) != 0);
         }
 
-        private static int FeatureSet
+        private static long FeatureSet
         {
             get
             {

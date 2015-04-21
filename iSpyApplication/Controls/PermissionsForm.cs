@@ -61,7 +61,7 @@ namespace iSpyApplication.Controls
                 _group.password =  EncDec.EncryptData(txtPassword.Text,MainForm.Conf.EncryptCode);
             }
 
-            var tot = (from CheckBox c in fpFeatures.Controls where c.Checked select (int)c.Tag).Sum();
+            var tot = (from CheckBox c in fpFeatures.Controls where c.Checked select (long)c.Tag).Sum();
             _group.featureset = tot;
             return true;
         }
