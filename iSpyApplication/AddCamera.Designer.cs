@@ -290,8 +290,6 @@ namespace iSpyApplication
             this.tableLayoutPanel16 = new System.Windows.Forms.TableLayoutPanel();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.label77 = new System.Windows.Forms.Label();
-            this.txtTags = new System.Windows.Forms.TextBox();
             this.chkPublic = new System.Windows.Forms.CheckBox();
             this.chkUploadGrabs = new System.Windows.Forms.CheckBox();
             this.chkUploadRecordings = new System.Windows.Forms.CheckBox();
@@ -301,6 +299,8 @@ namespace iSpyApplication
             this.txtCloudPath = new System.Windows.Forms.TextBox();
             this.btnAuthorise = new System.Windows.Forms.Button();
             this.btnAuthoriseYouTube = new System.Windows.Forms.Button();
+            this.label77 = new System.Windows.Forms.Label();
+            this.txtTags = new System.Windows.Forms.TextBox();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.pnlScheduler = new System.Windows.Forms.GroupBox();
             this.panel8 = new System.Windows.Forms.Panel();
@@ -3782,24 +3782,6 @@ namespace iSpyApplication
             this.pictureBox1.TabIndex = 11;
             this.pictureBox1.TabStop = false;
             // 
-            // label77
-            // 
-            this.label77.AutoSize = true;
-            this.label77.Location = new System.Drawing.Point(117, 8);
-            this.label77.Margin = new System.Windows.Forms.Padding(6, 8, 6, 0);
-            this.label77.Name = "label77";
-            this.label77.Size = new System.Drawing.Size(31, 13);
-            this.label77.TabIndex = 3;
-            this.label77.Text = "Tags";
-            // 
-            // txtTags
-            // 
-            this.txtTags.Location = new System.Drawing.Point(175, 6);
-            this.txtTags.Margin = new System.Windows.Forms.Padding(6);
-            this.txtTags.Name = "txtTags";
-            this.txtTags.Size = new System.Drawing.Size(162, 20);
-            this.txtTags.TabIndex = 2;
-            // 
             // chkPublic
             // 
             this.chkPublic.AutoSize = true;
@@ -3895,6 +3877,24 @@ namespace iSpyApplication
             this.btnAuthoriseYouTube.Text = "Authorise";
             this.btnAuthoriseYouTube.UseVisualStyleBackColor = true;
             this.btnAuthoriseYouTube.Click += new System.EventHandler(this.btnAuthoriseYouTube_Click);
+            // 
+            // label77
+            // 
+            this.label77.AutoSize = true;
+            this.label77.Location = new System.Drawing.Point(117, 8);
+            this.label77.Margin = new System.Windows.Forms.Padding(6, 8, 6, 0);
+            this.label77.Name = "label77";
+            this.label77.Size = new System.Drawing.Size(31, 13);
+            this.label77.TabIndex = 3;
+            this.label77.Text = "Tags";
+            // 
+            // txtTags
+            // 
+            this.txtTags.Location = new System.Drawing.Point(175, 6);
+            this.txtTags.Margin = new System.Windows.Forms.Padding(6);
+            this.txtTags.Name = "txtTags";
+            this.txtTags.Size = new System.Drawing.Size(162, 20);
+            this.txtTags.TabIndex = 2;
             // 
             // tabPage5
             // 

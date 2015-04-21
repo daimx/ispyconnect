@@ -127,7 +127,6 @@ namespace iSpyApplication
                         return;
                     }
                     break;
-                break;
             }
 
             MainForm.Conf.VLCURL = cmbVLCURL.Text.Trim();

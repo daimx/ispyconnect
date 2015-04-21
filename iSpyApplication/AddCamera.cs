@@ -2733,11 +2733,16 @@ namespace iSpyApplication
             switch (ddlCloudProviders.SelectedItem.ToString())
             {
                 case "Google Drive":
-                    Cloud.Drive.Authorise();
-                    MessageBox.Show(this, "OK");
+                    if (Cloud.Drive.Authorise())
+                        MessageBox.Show(this, "OK");
+                    else
+                        MessageBox.Show(this, LocRm.GetString("Failed"));
                     return;
                 case "Dropbox":
-                    Cloud.Dropbox.Authorise();
+                    if (Cloud.Dropbox.Authorise())
+                        MessageBox.Show(this, "OK");
+                    else
+                        MessageBox.Show(this, LocRm.GetString("Failed"));
                     return;
             }
         }
@@ -2792,8 +2797,10 @@ namespace iSpyApplication
         {
             if (YouTubeUploader.Authorise())
             {
-                MessageBox.Show(this, LocRm.GetString("LoginSuccess"));
+                MessageBox.Show(this, LocRm.GetString("OK"));
             }
+            else
+                MessageBox.Show(this, LocRm.GetString("Failed"));
         }
 
     }

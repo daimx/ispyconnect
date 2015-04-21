@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 
 using Google.Apis.Auth.OAuth2;
@@ -13,7 +14,6 @@ using Google.Apis.Upload;
 using Google.Apis.Util.Store;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
-using log4net.Repository.Hierarchy;
 
 namespace iSpyApplication.Cloud
 {
@@ -92,6 +92,7 @@ namespace iSpyApplication.Cloud
                                 ClientSecret = "Guvru7Ug8DrGcOupqEs6fTB1"
                             },
                         }), "user", token);
+
                     _service = new YouTubeService(new BaseClientService.Initializer
                     {
                         HttpClientInitializer = credential,
@@ -117,16 +118,17 @@ namespace iSpyApplication.Cloud
                     _tCancel.Cancel(true);
 
                 _tCancel = new CancellationTokenSource();
+
                 var t = GoogleWebAuthorizationBroker.AuthorizeAsync(
                     new ClientSecrets
                     {
                         ClientId = "648753488389.apps.googleusercontent.com",
                         ClientSecret = "Guvru7Ug8DrGcOupqEs6fTB1"
                     },
-                    new[] { YouTubeService.Scope.YoutubeUpload },
+                    new[] {YouTubeService.Scope.YoutubeUpload},
                     "user", _tCancel.Token, new FileDataStore("YouTube.Auth.Store")).Result;
-                if (t != null && t.Token != null &&
-                   t.Token.RefreshToken != null)
+
+                if (t != null && t.Token != null && t.Token.RefreshToken != null)
                 {
 
                     MainForm.Conf.YouTubeToken = t.Token.RefreshToken;

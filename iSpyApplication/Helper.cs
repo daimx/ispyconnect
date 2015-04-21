@@ -26,7 +26,7 @@ namespace iSpyApplication
 
         public static bool HasFeature(Enums.Features feature)
         {
-            return ((1 & FeatureSet) != 0) || (((int)feature & FeatureSet) != 0);
+            return ((1L & FeatureSet) != 0) || (((long)feature & FeatureSet) != 0);
         }
 
         private static long FeatureSet
