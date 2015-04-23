@@ -2763,10 +2763,11 @@ namespace iSpyApplication
             pb.Cursor = Cursors.Hand;
             pb.Selected = false;
             pb.FileName = movieName;
-            pb.CreatedDate = new DateTime(fp.CreatedDateTicks);
+            var dt = new DateTime(fp.CreatedDateTicks);
+            pb.CreatedDate = dt;
             pb.MouseDown += PbMouseDown;
             pb.MouseEnter += PbMouseEnter;
-            string txt = name + ": " + pb.CreatedDate.ToString(CultureInfo.CurrentUICulture);
+            string txt = name + ": " + dt.ToString(CultureInfo.CurrentUICulture);
             pb.DisplayName = txt;
             pb.IsMerged = fp.IsMerged;
             lock (ThreadLock)
