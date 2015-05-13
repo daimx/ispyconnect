@@ -3910,6 +3910,7 @@ namespace iSpyApplication.Server
                     {
                         bool onlinestatus = oc.settings.active;
                         bool talkconfigured = oc.settings.audiomodel != "None";
+
                         resp += "2," + oc.id + "," + onlinestatus.ToString().ToLower() + "," +
                                 oc.name.Replace(",", "&comma;") + "," + GetStatus(onlinestatus) + "," +
                                 oc.description.Replace(",", "&comma;").Replace("\n", " ") + "," +

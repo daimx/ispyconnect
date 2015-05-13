@@ -911,9 +911,7 @@ namespace iSpyApplication.Controls
                                     case 4:
                                         if (IsEnabled)
                                         {
-                                            string fn = SaveFrame();
-                                            if (fn != "" && MainForm.Conf.OpenGrabs)
-                                                MainForm.OpenUrl(fn);
+                                            Snapshot();
                                         }
                                         break;
                                     case 5:
@@ -1027,6 +1025,7 @@ namespace iSpyApplication.Controls
         protected override void OnGotFocus(EventArgs e)
         {
             MainForm.InstanceReference.PTZToolUpdate(this);
+            MainForm.InstanceReference.LastFocussedControl = this;
             _requestRefresh = true;
             base.OnGotFocus(e);
         }
@@ -1966,6 +1965,13 @@ namespace iSpyApplication.Controls
                     _videoWidth = 480; _videoHeight = 320;
                     break;
             }
+        }
+
+        public void Snapshot()
+        {
+            string fn = SaveFrame();
+            if (fn != "" && MainForm.Conf.OpenGrabs)
+                MainForm.OpenUrl(fn);
         }
 
         public string SaveFrame(Bitmap bmp = null)
@@ -5079,6 +5085,23 @@ namespace iSpyApplication.Controls
 
                 
             }
+        }
+
+        public bool ExecutePluginShortcut(string shortcut)
+        {
+            if (Camera.Plugin != null)
+            {
+                var a = Camera.Plugin.GetType().GetMethod("ExecuteShortcut");
+                if (a != null)
+                {
+                    var b = (String)a.Invoke(Camera.Plugin, new object[] { shortcut });
+                    if (b == "OK")
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         internal void LogToPlugin(string message)

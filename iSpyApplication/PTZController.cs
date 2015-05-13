@@ -1478,8 +1478,13 @@ namespace iSpyApplication
 
             if (cmd.Contains("://"))
             {
-                url = cmd;
-                absURL = true;
+                Uri uriTemp;
+                if (Uri.TryCreate(cmd, UriKind.RelativeOrAbsolute, out uriTemp))
+                {
+                    absURL = uriTemp.IsAbsoluteUri;
+                    if (absURL)
+                        url = cmd;
+                }
             }
 
             try
@@ -1498,17 +1503,15 @@ namespace iSpyApplication
             {
                 url = uri.AbsoluteUri.Replace(uri.PathAndQuery, "/");
 
-                const string s = "http";
-                //if (!String.IsNullOrEmpty(ptz.Prefix))
-                //    s = ptz.Prefix;
-                int p = 80;
-                if (ptz.port > 0)
-                    p = ptz.port;
-                
-                if (!uri.Scheme.ToLower().StartsWith("http")) //rtsp/mrl replace
-                    url = url.Replace(":" + uri.Port + "/", ":" + p + "/");
+                if (ptz.portSpecified && ptz.port > 0)
+                {
+                    url = url.ReplaceFirst(":" + uri.Port + "/", ":" + ptz.port + "/");
+                }
 
-                url = url.Replace(uri.Scheme + "://", s + "://");              
+                if (!uri.Scheme.ToLower().StartsWith("http")) //allow http and https
+                {
+                    url = url.ReplaceFirst(uri.Scheme + "://", "http://");
+                }
 
                 url = url.Trim('/');
 

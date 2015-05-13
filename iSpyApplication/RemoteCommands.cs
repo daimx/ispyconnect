@@ -13,27 +13,8 @@ namespace iSpyApplication
             RenderResources();
         }
 
-        private void Button3Click(object sender, EventArgs e)
-        {
-            var ofdDetect = new OpenFileDialog {FileName = "", InitialDirectory = Program.AppPath + @"sounds\"};
-            ofdDetect.ShowDialog(this);
-            if (ofdDetect.FileName != "")
-            {
-                txtExecute.Text = ofdDetect.FileName;
-            }
-            ofdDetect.Dispose();
-        }
-
-        private void Login()
-        {
-            ((MainForm) Owner).Connect(false);
-            gpbSubscriber.Enabled = MainForm.Conf.Subscribed;
-        }
-
         private void ManualAlertsLoad(object sender, EventArgs e)
         {
-            gpbSubscriber.Enabled = MainForm.Conf.Subscribed;
-            linkLabel4.Visible = !gpbSubscriber.Enabled;
             RenderCommands();
 
             if (lbManualAlerts.Items.Count > 0)
@@ -44,19 +25,11 @@ namespace iSpyApplication
         {
             Text = LocRm.GetString("RemoteCommands");
             btnAddCommand.Text = LocRm.GetString("Add");
-            btnDelete.Text = LocRm.GetString("Delete");
-            button1.Text = LocRm.GetString("Finish");
-            button3.Text = "...";
-            gpbSubscriber.Text = LocRm.GetString("NewRemoteCommand");
-            label1.Text = LocRm.GetString("Name");
+            btnDelete.Text = LocRm.GetString("Delete");            
             label45.Text = LocRm.GetString("forExamples");
             label82.Text = LocRm.GetString("YouCanTriggerRemoteComman");
-            label83.Text = LocRm.GetString("ExecuteFile");
             linkLabel3.Text = LocRm.GetString("Reset");
-            llblHelp.Text = LocRm.GetString("help");
-
-            LocRm.SetString(linkLabel1,"Test");
-            LocRm.SetString(linkLabel2, "Examples");
+            
         }
 
 
@@ -76,19 +49,14 @@ namespace iSpyApplication
 
         private void BtnAddCommandClick(object sender, EventArgs e)
         {
-            string name = txtName.Text.Trim();
-            string execute = txtExecute.Text.Trim();
-
-            if (MainForm.RemoteCommands.SingleOrDefault(p => p.name == name) != null)
+            using (var arc = new AddRemoteCommand())
             {
-                MessageBox.Show(LocRm.GetString("UniqueNameCommand"));
-                return;
-            }
-
-            var oc = new objectsCommand { name = name, command = execute, id = MainForm.NextCommandId };
-            
-            MainForm.RemoteCommands.Add(oc);
-            RenderCommands();
+                if (arc.ShowDialog(this) == DialogResult.OK)
+                {
+                    RenderCommands();
+                }
+                
+            }           
         }
 
         private void BtnDeleteClick(object sender, EventArgs e)
@@ -106,30 +74,6 @@ namespace iSpyApplication
             }
         }
 
-        private void LinkLabel1LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            string execute = txtExecute.Text.Trim();
-            if (execute != "")
-            {
-                ((MainForm) Owner).RunCommand(execute);
-            }
-        }
-
-        private void Button1Click(object sender, EventArgs e)
-        {
-            Close();
-        }
-
-        private void LinkLabel4LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            Login();
-        }
-
-        private void llblHelp_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            MainForm.OpenUrl( MainForm.Website+"/userguide-remotecommands.aspx");
-        }
-
         private void lbManualAlerts_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (lbManualAlerts.SelectedIndex>-1)
@@ -139,17 +83,18 @@ namespace iSpyApplication
                 objectsCommand oc = MainForm.RemoteCommands.FirstOrDefault(p => p.id == Convert.ToInt32(al));
                 if (oc != null)
                 {
-                    lblCommand.Text = oc.command;
+                    string s = oc.command;
+                    if (!String.IsNullOrEmpty(oc.emitshortcut))
+                    {
+                        if (oc.emitshortcut != "")
+                            s = oc.emitshortcut + " & " + oc.command;
+                    }
+                    lblCommand.Text = s;
                 }
 
             }
         }
-
-        private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            MainForm.OpenUrl(MainForm.Website + "/userguide-commandline.aspx");
-        }
-
+        
         private void linkLabel3_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             if (MessageBox.Show(LocRm.GetString("AreYouSure"), LocRm.GetString("Confirm"), MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.Cancel)

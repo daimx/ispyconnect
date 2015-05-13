@@ -370,7 +370,6 @@ namespace iSpyApplication
                 command = "ispy ALLON",
                 id = 0,
                 name = "cmd_SwitchAllOn",
-                smscommand = "ALL ON"
             };
             _remotecommands.Add(cmd);
 
@@ -379,7 +378,6 @@ namespace iSpyApplication
                 command = "ispy ALLOFF",
                 id = 1,
                 name = "cmd_SwitchAllOff",
-                smscommand = "ALL OFF"
             };
             _remotecommands.Add(cmd);
 
@@ -388,7 +386,6 @@ namespace iSpyApplication
                 command = "ispy APPLYSCHEDULE",
                 id = 2,
                 name = "cmd_ApplySchedule",
-                smscommand = "APPLY SCHEDULE"
             };
             _remotecommands.Add(cmd);
 
@@ -399,7 +396,6 @@ namespace iSpyApplication
                           command = "ispy RECORDONDETECTON",
                           id = 3,
                           name = "cmd_RecordOnDetectAll",
-                          smscommand = "RECORDONDETECTON"
                       };
                 _remotecommands.Add(cmd);
 
@@ -408,7 +404,6 @@ namespace iSpyApplication
                           command = "ispy RECORDONALERTON",
                           id = 4,
                           name = "cmd_RecordOnAlertAll",
-                          smscommand = "RECORDONALERTON"
                       };
                 _remotecommands.Add(cmd);
 
@@ -417,7 +412,6 @@ namespace iSpyApplication
                           command = "ispy RECORDINGOFF",
                           id = 5,
                           name = "cmd_RecordOffAll",
-                          smscommand = "RECORDINGOFF"
                       };
                 _remotecommands.Add(cmd);
 
@@ -426,7 +420,6 @@ namespace iSpyApplication
                     command = "ispy RECORD",
                     id = 8,
                     name = "cmd_RecordAll",
-                    smscommand = "RECORD"
                 };
                 _remotecommands.Add(cmd);
 
@@ -435,7 +428,6 @@ namespace iSpyApplication
                     command = "ispy RECORDSTOP",
                     id = 9,
                     name = "cmd_RecordAllStop",
-                    smscommand = "RECORDSTOP"
                 };
                 _remotecommands.Add(cmd);
             }
@@ -445,7 +437,6 @@ namespace iSpyApplication
                 command = "ispy ALERTON",
                 id = 6,
                 name = "cmd_AlertsOnAll",
-                smscommand = "ALERTSON"
             };
             _remotecommands.Add(cmd);
 
@@ -454,7 +445,6 @@ namespace iSpyApplication
                 command = "ispy ALERTOFF",
                 id = 7,
                 name = "cmd_AlertsOffAll",
-                smscommand = "ALERTSOFF"
             };
             _remotecommands.Add(cmd);
 
@@ -466,7 +456,6 @@ namespace iSpyApplication
                           command = "ispy SNAPSHOT",
                           id = 10,
                           name = "cmd_SnapshotAll",
-                          smscommand = "SNAPSHOT"
                       };
                 _remotecommands.Add(cmd);
             }
@@ -478,7 +467,18 @@ namespace iSpyApplication
 
             if (oc != null)
             {
-                RunCommand(oc.command);
+                if (!String.IsNullOrEmpty(oc.command))
+                    RunCommand(oc.command);
+                if (!String.IsNullOrEmpty(oc.emitshortcut))
+                {
+                    var converter = new KeysConverter();
+                    var keys = converter.ConvertFromString(oc.emitshortcut);
+                    if (keys != null)
+                    {
+                        var shortcutKeys = (Keys)keys;
+                        MainForm_KeyDown(this, new KeyEventArgs(shortcutKeys));
+                    }
+                }
             }
         }
 
@@ -515,133 +515,105 @@ namespace iSpyApplication
 
         }
 
+        private Control GetActiveControl(out int index)
+        {
+            int i = 0;
+            foreach (Control c in _pnlCameras.Controls)
+            {
+                if (c.Equals(LastFocussedControl))
+                {
+                    index = i;
+                    return c;
+                }
+                i++;
+            }
+            if (_pnlCameras.Controls.Count > 0)
+            {
+                _pnlCameras.Controls[0].Focus();
+                index = 0;
+                return _pnlCameras.Controls[0];
+            }
+            index = -1;
+            return null;
+
+        }
+
         public void ProcessKey(string keycommand)
         {
-            bool focussed = false;
+            int i = -1;
+            var c = GetActiveControl(out i);
+            if (i == -1)
+                return;
+            
+
+            var cw = c as CameraWindow;
+            var vl = c as VolumeLevel;
+            var fp = c as FloorPlanControl;
 
             switch (keycommand.ToLower())
             {
                 case "channelup":
                 case "nexttrack":
                 case "next_control":
-                    for (int i = 0; i < _pnlCameras.Controls.Count; i++)
-                    {
-                        Control c = _pnlCameras.Controls[i];
-                        if (c.Focused)
-                        {
-                            i++;
-                            if (i == _pnlCameras.Controls.Count)
-                                i = 0;
-                            _pnlCameras.Controls[i].Focus();
-                            focussed = true;
-                            break;
-                        }
-                    }
-                    if (!focussed && _pnlCameras.Controls.Count > 0)
-                    {
-                        _pnlCameras.Controls[0].Focus();
-                    }
+                    i++;
+                    if (i == _pnlCameras.Controls.Count)
+                        i = 0;
+                    _pnlCameras.Controls[i].Focus();
                     break;
                 case "channeldown":
                 case "previoustrack":
                 case "previous_control":
-                    for (int i = 0; i < _pnlCameras.Controls.Count; i++)
-                    {
-                        Control c = _pnlCameras.Controls[i];
-                        if (c.Focused)
-                        {
-                            i--;
-                            if (i == -1)
-                                i = _pnlCameras.Controls.Count - 1;
-                            _pnlCameras.Controls[i].Focus();
-                            focussed = true;
-                            break;
-                        }
-                    }
-
-                    if (!focussed && _pnlCameras.Controls.Count > 0)
-                    {
-                        _pnlCameras.Controls[0].Focus();
-                    }
+                    i--;
+                    if (i == -1)
+                        i = _pnlCameras.Controls.Count - 1;
+                    _pnlCameras.Controls[i].Focus();
                     break;
                 case "play":
                 case "pause":
-                    foreach (Control c in _pnlCameras.Controls)
+                    if (cw != null)
                     {
-                        if (c.Focused)
+                        if (cw.Camobject.settings.active)
                         {
-                            var cw = c as CameraWindow;
-                            if (cw != null)
-                            {
-                                if (cw.Camobject.settings.active)
-                                {
-                                    Maximise(cw);
-                                }
-                                else
-                                    cw.Enable();
-                            }
-                            var vw = c as VolumeLevel;
-                            if (vw != null)
-                            {
-                                if (vw.Micobject.settings.active)
-                                {
-                                    Maximise(vw);
-                                }
-                                else
-                                    vw.Enable();
-                            }
-                            break;
+                            Maximise(cw);
                         }
+                        else
+                            cw.Enable();
+                    }
+                    if (vl != null)
+                    {
+                        if (vl.Micobject.settings.active)
+                        {
+                            Maximise(vl);
+                        }
+                        else
+                            vl.Enable();
                     }
                     break;
                 case "stop":
-                    foreach (Control c in _pnlCameras.Controls)
+                    if (cw != null)
                     {
-                        if (c.Focused)
-                        {
-                            if (c is CameraWindow)
-                            {
-                                ((CameraWindow)c).Disable();
-                            }
-                            if (c is VolumeLevel)
-                            {
-                                ((VolumeLevel)c).Disable();
-                            }
-                            break;
-                        }
+                        cw.Disable();
+                    }
+                    if (vl != null)
+                    {
+                        vl.Disable();
                     }
                     break;
                 case "record":
-                    foreach (Control c in _pnlCameras.Controls)
+                    if (cw !=null)
                     {
-                        if (c.Focused)
-                        {
-                            if (c is CameraWindow)
-                            {
-                                ((CameraWindow)c).RecordSwitch(!((CameraWindow)c).Recording);
-                            }
-                            if (c is VolumeLevel)
-                            {
-                                ((VolumeLevel)c).RecordSwitch(!((VolumeLevel)c).Recording);
-                            }
-                            break;
-                        }
+                        cw.RecordSwitch(!((CameraWindow)c).Recording);
+                    }
+                    if (vl != null)
+                    {
+                        vl.RecordSwitch(!((VolumeLevel)c).Recording);
                     }
                     break;
                 case "maxmin":
                 case "zoom":
-                    foreach (Control c in _pnlCameras.Controls)
+                    if (c is CameraWindow || c is VolumeLevel || c is FloorPlanControl)
                     {
-
-                        if (c.Focused)
-                        {
-                            if (c is CameraWindow || c is VolumeLevel || c is FloorPlanControl)
-                            {
-                                Maximise(c);
-                                break;
-                            }
-                        }
-
+                        Maximise(c);
                     }
                     break;
                 case "standby":
@@ -650,32 +622,51 @@ namespace iSpyApplication
                    Close();
                     break;
                 case "delete":
-                    foreach (Control c in _pnlCameras.Controls)
+                    if (cw != null)
                     {
-
-                        if (c.Focused)
-                        {
-                            var cameraControl = c as CameraWindow;
-                            if (cameraControl != null)
-                            {
-                                RemoveCamera(cameraControl,true);
-                                break;
-                            }
-                            var volumeControl = c as VolumeLevel;
-                            if (volumeControl != null)
-                            {
-                                RemoveMicrophone(volumeControl, true);
-                                break;
-                            }
-                            var floorPlanControl = c as FloorPlanControl;
-                            if (floorPlanControl != null)
-                            {
-                                RemoveFloorplan(floorPlanControl, true);
-                                break;
-                            }
-                        }
-
+                        RemoveCamera(cw,true);
                     }
+                    if (vl != null)
+                    {
+                        RemoveMicrophone(vl, true);
+                    }
+                    if (fp != null)
+                    {
+                        RemoveFloorplan(fp, true);
+                    }
+                    break;
+                case "talk":
+                    
+                    if (cw!=null)
+                    {
+                        cw.Talking = !cw.Talking;
+                        TalkTo(cw, cw.Talking);
+                    }
+                    break;
+                case "listen":
+                    if (cw != null)
+                    {
+                        cw.Listen();
+                    }
+                    if (vl != null)
+                    {
+                        vl.Listen();
+                    }
+                    break;
+                case "grab":
+                    if (cw != null)
+                    {
+                        cw.Snapshot();
+                    }
+                    break;
+                case "edit":
+                    if (cw != null)
+                        EditCamera(cw.Camobject);
+                    if (vl!=null)
+                        EditMicrophone(vl.Micobject);
+                    if (fp!=null)
+                        EditFloorplan(fp.Fpobject);
+
                     break;
 
             }

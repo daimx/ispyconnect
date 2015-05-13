@@ -16,10 +16,8 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Threading;
 using System.Timers;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
 using AForge.Video;
 using Antiufo.Controls;
-using iSpyApplication.Audio;
 using iSpyApplication.Audio.streams;
 using iSpyApplication.Audio.talk;
 using iSpyApplication.Cloud;
@@ -134,7 +132,8 @@ namespace iSpyApplication
         public static Rectangle RTextOff = new Rectangle(443, 83, 16, 16);
         public static Rectangle RFolder = new Rectangle(473, 3, 16, 16);
         public static Rectangle RFolderOff = new Rectangle(473, 83, 16, 16);
-        
+        public ISpyControl LastFocussedControl = null;
+
         internal static LocalServer MWS;
 
         public static string PurchaseLink = "http://www.ispyconnect.com/astore.aspx";
@@ -181,6 +180,7 @@ namespace iSpyApplication
         internal PlayerVLC PlayerVLC;
         public McRemoteControlManager.RemoteControlDevice RemoteManager;
         public bool SilentStartup;
+        
         internal CameraWindow TalkCamera;
 
         private MenuItem _aboutHelpItem;
@@ -2493,23 +2493,6 @@ namespace iSpyApplication
         }
 
 
-        private void SetInactiveToolStripMenuItemClick(object sender, EventArgs e)
-        {
-            if (ContextTarget is CameraWindow)
-            {
-                var cameraControl = ((CameraWindow) ContextTarget);
-                cameraControl.Disable();
-            }
-            else
-            {
-                if (ContextTarget is VolumeLevel)
-                {
-                    var vf = ((VolumeLevel) ContextTarget);
-                    vf.Disable();
-                }
-            }
-        }
-
         private void EditToolStripMenuItemClick(object sender, EventArgs e)
         {
             if (ContextTarget is CameraWindow)
@@ -3677,95 +3660,130 @@ namespace iSpyApplication
             if (e.KeyCode == Keys.PageUp)
             {
                 ProcessKey("previous_control");
+                return;
             }
 
             if (e.KeyCode == Keys.PageDown)
             {
-                ProcessKey("next_control");
+                ProcessKey("next_control"); return;
             }
             if (!e.Alt && !e.Shift)
             {
                 if (e.KeyCode == Keys.P && (e.Control))
                 {
-                    ProcessKey("play");
+                    ProcessKey("play"); return;
                 }
 
                 if (e.KeyCode == Keys.S && e.Control)
                 {
-                    ProcessKey("stop");
+                    ProcessKey("stop"); return;
                 }
 
                 if (e.KeyCode == Keys.R && e.Control)
                 {
-                    ProcessKey("record");
+                    ProcessKey("record"); return;
                 }
 
                 if (e.KeyCode == Keys.Z && e.Control)
                 {
-                    ProcessKey("zoom");
+                    ProcessKey("zoom"); return;
+                }
+
+                if (e.KeyCode == Keys.T && (e.Control))
+                {
+                    ProcessKey("talk"); return;
+                }
+
+                if (e.KeyCode == Keys.L && (e.Control))
+                {
+                    ProcessKey("listen"); return;
+                }
+
+                if (e.KeyCode == Keys.G && (e.Control))
+                {
+                    ProcessKey("grab"); return;
+                }
+
+                if (e.KeyCode == Keys.E && (e.Control))
+                {
+                    ProcessKey("edit"); return;
                 }
             }
             if (e.KeyCode == Keys.F4 && e.Alt)
             {
-                ProcessKey("power");
+                ProcessKey("power"); return;
             }
             if (e.KeyCode.ToString() == "D0")
             {
-                MaximiseControl(10);
+                MaximiseControl(10); return;
             }
             if (e.KeyCode.ToString() == "D1")
             {
-                MaximiseControl(0);
+                MaximiseControl(0); return;
             }
             if (e.KeyCode.ToString() == "D2")
             {
-                MaximiseControl(1);
+                MaximiseControl(1); return;
             }
             if (e.KeyCode.ToString() == "D3")
             {
-                MaximiseControl(2);
+                MaximiseControl(2); return;
             }
             if (e.KeyCode.ToString() == "D4")
             {
-                MaximiseControl(3);
+                MaximiseControl(3); return;
             }
             if (e.KeyCode.ToString() == "D5")
             {
-                MaximiseControl(4);
+                MaximiseControl(4); return;
             }
             if (e.KeyCode.ToString() == "D6")
             {
-                MaximiseControl(5);
+                MaximiseControl(5); return;
             }
             if (e.KeyCode.ToString() == "D7")
             {
-                MaximiseControl(6);
+                MaximiseControl(6); return;
             }
             if (e.KeyCode.ToString() == "D8")
             {
-                MaximiseControl(7);
+                MaximiseControl(7); return;
             }
             if (e.KeyCode.ToString() == "D9")
             {
-                MaximiseControl(8);
+                MaximiseControl(8); return;
             }
 
             if (e.Alt && e.KeyCode == Keys.Enter)
             {
-                MaxMin();
+                MaxMin(); return;
             }
             if (e.KeyCode == Keys.Delete)
             {
                 ProcessKey("delete");
-                ProcessKey("next_control");
+                ProcessKey("next_control"); return;
             }
             if (e.KeyCode.ToString()=="Menu")
             {
                 fileMenuToolStripMenuItem.Checked = menuItem5.Checked = true;
                 Menu = !fileMenuToolStripMenuItem.Checked ? null : mainMenu;
 
-                Conf.ShowFileMenu = fileMenuToolStripMenuItem.Checked;
+                Conf.ShowFileMenu = fileMenuToolStripMenuItem.Checked; return;
             }
+            int i = -1;
+            var c = GetActiveControl(out i);
+            if (i > -1)
+            {
+                var cw = c as CameraWindow;
+                if (cw != null)
+                {
+                    var converter = new KeysConverter();
+                    string cmd = converter.ConvertToString(e.KeyData);
+                    if (cw.ExecutePluginShortcut(cmd))
+                        return;
+                }
+            }
+            //unhandled
         }
 
         private void MaximiseControl(int index)

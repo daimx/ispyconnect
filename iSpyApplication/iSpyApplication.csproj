@@ -399,6 +399,12 @@
     <Compile Include="AddFloorPlan.Designer.cs">
       <DependentUpon>AddFloorPlan.cs</DependentUpon>
     </Compile>
+    <Compile Include="AddRemoteCommand.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddRemoteCommand.Designer.cs">
+      <DependentUpon>AddRemoteCommand.cs</DependentUpon>
+    </Compile>
     <Compile Include="Audio\AudioSynth.cs" />
     <Compile Include="Audio\MP3\ReadFullyStream.cs" />
     <Compile Include="Audio\MP3\WebStream.cs" />
@@ -1242,6 +1248,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AddFloorPlan.resx">
       <DependentUpon>AddFloorPlan.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AddRemoteCommand.resx">
+      <DependentUpon>AddRemoteCommand.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\ActionEditor.resx">
       <DependentUpon>ActionEditor.cs</DependentUpon>

@@ -1294,6 +1294,7 @@ namespace iSpyApplication.Controls
         protected override void OnGotFocus(EventArgs e)
         {
             _requestRefresh = true;
+            MainForm.InstanceReference.LastFocussedControl = this;
             base.OnGotFocus(e);
         }
 
