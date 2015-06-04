@@ -11,6 +11,8 @@ namespace iSpyApplication
 {
     public partial class AddRemoteCommand : Form
     {
+        public objectsCommand OC = null;
+
         public AddRemoteCommand()
         {
             InitializeComponent();
@@ -41,6 +43,16 @@ namespace iSpyApplication
         {
             string name = txtName.Text.Trim();
             string execute = txtExecute.Text.Trim();
+
+            if (OC != null)
+            {
+                OC.name = name;
+                OC.command = execute;
+                OC.emitshortcut = txtShortcutKeys.Text.Trim();
+                DialogResult = DialogResult.OK;
+                Close();
+                return;
+            }
 
             if (MainForm.RemoteCommands.SingleOrDefault(p => p.name == name) != null)
             {
@@ -96,7 +108,18 @@ namespace iSpyApplication
 
         private void AddRemoteCommand_Load(object sender, EventArgs e)
         {
+            if (OC != null)
+            {
+                txtExecute.Text = OC.command;
+                txtShortcutKeys.Text = OC.emitshortcut;
+                if (OC.name.StartsWith("cmd_"))
+                    txtName.Text = LocRm.GetString(OC.name);
+                else
+                    txtName.Text = OC.name;
 
+                Text = btnAddCommand.Text = LocRm.GetString("Update");
+                
+            }
         }
     }
 }

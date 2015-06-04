@@ -461,7 +461,7 @@ namespace iSpyApplication
             }
         }
 
-        private void RunCommand(int commandIndex)
+        public void RunCommand(int commandIndex)
         {
             objectsCommand oc = RemoteCommands.FirstOrDefault(p => p.id == commandIndex);
 

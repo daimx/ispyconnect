@@ -182,6 +182,8 @@ namespace iSpyApplication.Cloud
             }
             if (Service != null)
             {
+                if (us.CameraData == null)
+                    return;
                 var video = new Google.Apis.YouTube.v3.Data.Video
                     {
                         Snippet =

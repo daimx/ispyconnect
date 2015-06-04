@@ -18,8 +18,8 @@ using System.Xml.Serialization;
 using AForge.Video;
 using iSpyApplication.Audio;
 using iSpyApplication.Audio.streams;
-using iSpyApplication.MP3Stream;
 using iSpyApplication.Server;
+using NAudio.Lame;
 using NAudio.Wave;
 using iSpy.Video.FFMPEG;
 using utils;
@@ -87,7 +87,7 @@ namespace iSpyApplication.Controls
 
         //private AudioStreamer _as = null;
         private WaveFormat _audioStreamFormat;
-        private Mp3Writer _mp3Writer;
+        private LameMP3FileWriter _mp3Writer;
         private readonly MemoryStream _outStream = new MemoryStream();
         private readonly byte[] _bResampled = new byte[22050];
 
@@ -1566,7 +1566,7 @@ namespace iSpyApplication.Controls
                     {
                         #region mp3writer
 
-                        DateTime date = Helper.Now;
+                        DateTime date = DateTime.Now;
 
                         string filename = String.Format("{0}-{1}-{2}_{3}-{4}-{5}",
                             date.Year, Helper.ZeroPad(date.Month), Helper.ZeroPad(date.Day),
@@ -2233,8 +2233,8 @@ namespace iSpyApplication.Controls
                     if (_mp3Writer == null)
                     {
                         _audioStreamFormat = new WaveFormat(22050, 16, Micobject.settings.channels);
-                        var wf = new MP3Stream.WaveFormat(_audioStreamFormat.SampleRate, _audioStreamFormat.BitsPerSample, _audioStreamFormat.Channels);
-                        _mp3Writer = new Mp3Writer(_outStream, wf, false);
+                        var wf = new WaveFormat(_audioStreamFormat.SampleRate, _audioStreamFormat.BitsPerSample, _audioStreamFormat.Channels);
+                        _mp3Writer = new LameMP3FileWriter(_outStream, wf, LAMEPreset.STANDARD);
                     }
 
                     byte[] bSrc = e.RawData;

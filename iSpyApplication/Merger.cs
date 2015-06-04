@@ -6,6 +6,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using onvif.services;
+using DateTime = System.DateTime;
 
 namespace iSpyApplication
 {
@@ -82,6 +84,8 @@ namespace iSpyApplication
             if (_ffmpegProcess != null)
                 return;
 
+            if (!Helper.HasFeature(Enums.Features.Recording))
+                return;
             _pbMerge = new List<FilesFile>();
 
             _currentObject = ((Li)ddlObject.SelectedItem);

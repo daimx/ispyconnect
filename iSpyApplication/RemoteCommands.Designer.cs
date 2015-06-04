@@ -36,8 +36,9 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.linkLabel3 = new System.Windows.Forms.LinkLabel();
-            this.lblCommand = new System.Windows.Forms.Label();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.lblCommand = new System.Windows.Forms.Label();
+            this.btnEditCommand = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
@@ -76,7 +77,8 @@
             // 
             // btnDelete
             // 
-            this.btnDelete.Location = new System.Drawing.Point(69, 3);
+            this.btnDelete.Enabled = false;
+            this.btnDelete.Location = new System.Drawing.Point(135, 3);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(75, 19);
             this.btnDelete.TabIndex = 1;
@@ -117,6 +119,7 @@
             // flowLayoutPanel2
             // 
             this.flowLayoutPanel2.Controls.Add(this.btnAddCommand);
+            this.flowLayoutPanel2.Controls.Add(this.btnEditCommand);
             this.flowLayoutPanel2.Controls.Add(this.btnDelete);
             this.flowLayoutPanel2.Controls.Add(this.linkLabel3);
             this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Top;
@@ -128,7 +131,7 @@
             // linkLabel3
             // 
             this.linkLabel3.AutoSize = true;
-            this.linkLabel3.Location = new System.Drawing.Point(153, 6);
+            this.linkLabel3.Location = new System.Drawing.Point(219, 6);
             this.linkLabel3.Margin = new System.Windows.Forms.Padding(6);
             this.linkLabel3.Name = "linkLabel3";
             this.linkLabel3.Size = new System.Drawing.Size(35, 13);
@@ -136,6 +139,15 @@
             this.linkLabel3.TabStop = true;
             this.linkLabel3.Text = "Reset";
             this.linkLabel3.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel3_LinkClicked);
+            // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.Controls.Add(this.lblCommand);
+            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(299, 162);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(311, 38);
+            this.flowLayoutPanel1.TabIndex = 91;
             // 
             // lblCommand
             // 
@@ -148,14 +160,16 @@
             this.lblCommand.TabIndex = 90;
             this.lblCommand.Text = "Command";
             // 
-            // flowLayoutPanel1
+            // btnEditCommand
             // 
-            this.flowLayoutPanel1.Controls.Add(this.lblCommand);
-            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(299, 162);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(311, 38);
-            this.flowLayoutPanel1.TabIndex = 91;
+            this.btnEditCommand.Enabled = false;
+            this.btnEditCommand.Location = new System.Drawing.Point(69, 3);
+            this.btnEditCommand.Name = "btnEditCommand";
+            this.btnEditCommand.Size = new System.Drawing.Size(60, 19);
+            this.btnEditCommand.TabIndex = 7;
+            this.btnEditCommand.Text = "Edit";
+            this.btnEditCommand.UseVisualStyleBackColor = true;
+            this.btnEditCommand.Click += new System.EventHandler(this.btnEditCommand_Click);
             // 
             // RemoteCommands
             // 
@@ -193,5 +207,6 @@
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
         private System.Windows.Forms.Label lblCommand;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.Button btnEditCommand;
     }
 }

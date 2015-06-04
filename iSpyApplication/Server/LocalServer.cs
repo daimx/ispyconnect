@@ -612,7 +612,9 @@ namespace iSpyApplication.Server
                     var read = req.Stream.EndRead(result);
                     if (read > 0)
                         req.ASCII += Encoding.ASCII.GetString(req.Buffer, 0, read);
-                    if (req.ASCII.Length > 5)
+
+                    int iStartPos = req.ASCII.IndexOf(" HTTP", StringComparison.Ordinal);
+                    if (iStartPos > -1)
                     {
                         ProcessRequest(req.ASCII, req);
                     }
@@ -1609,31 +1611,7 @@ namespace iSpyApplication.Server
                     {
                         try
                         {
-                            if (oc.command.StartsWith("ispy ") || oc.command.StartsWith("ispy.exe "))
-                            {
-                                string cmd2 =
-                                    oc.command.Substring(oc.command.IndexOf(" ", StringComparison.Ordinal) + 1).Trim();
-
-                                int k = cmd2.ToLower().IndexOf("commands ", StringComparison.Ordinal);
-                                if (k != -1)
-                                {
-                                    cmd2 = cmd2.Substring(k + 9);
-                                }
-                                cmd2 = cmd2.Trim('"');
-                                string[] commands = cmd2.Split('|');
-                                foreach (string command2 in commands)
-                                {
-                                    if (!String.IsNullOrEmpty(command2))
-                                    {
-                                        MainForm.ProcessCommandInternal(command2.Trim('"'));
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                Process.Start(oc.command);
-                            }
-
+                            MainForm.InstanceReference.RunCommand(commandIndex);
                             resp = "Command Executed.,OK";
                         }
                         catch (Exception ex)
@@ -2422,6 +2400,7 @@ namespace iSpyApplication.Server
                     }
                     break;
                 case "getcameragrabs":
+                {
                     sd = GetVar(sRequest, "startdate");
                     ed = GetVar(sRequest, "enddate");
                     int pagesize = Convert.ToInt32(GetVar(sRequest, "pagesize"));
@@ -2443,8 +2422,8 @@ namespace iSpyApplication.Server
                         lFi =
                             lFi.FindAll(
                                 f =>
-                                f.Extension.ToLower() == ".jpg" && (sdl == 0 || f.CreationTime.Ticks > sdl) &&
-                                (edl == 0 || f.CreationTime.Ticks < edl));
+                                    f.Extension.ToLower() == ".jpg" && (sdl == 0 || f.CreationTime.Ticks > sdl) &&
+                                    (edl == 0 || f.CreationTime.Ticks < edl));
                         lFi = lFi.OrderByDescending(f => f.CreationTime).ToList();
                         func = func.Replace("total", lFi.Count.ToString(CultureInfo.InvariantCulture));
                         lFi = lFi.Skip(page*pagesize).Take(pagesize).ToList();
@@ -2462,8 +2441,58 @@ namespace iSpyApplication.Server
                             }
                         }
                     }
+                    else
+                        func = func.Replace("total", "0");
                     func = func.Replace("data", "\"" + grablist.ToString().Trim(',') + "\"");
                     resp = "OK";
+                }
+                    break;
+                case "getcameragrabs2":
+                {
+                    sd = GetVar(sRequest, "startdate");
+                    ed = GetVar(sRequest, "enddate");
+                    int pagesize = Convert.ToInt32(GetVar(sRequest, "pagesize"));
+                    page = Convert.ToInt32(GetVar(sRequest, "page"));
+                    if (sd != "")
+                        sdl = Convert.ToInt64(sd);
+                    if (ed != "")
+                        edl = Convert.ToInt64(ed);
+
+                    var grablist = new StringBuilder("");
+                    var ocgrab = MainForm.Cameras.FirstOrDefault(p => p.id == oid);
+                    if (ocgrab != null)
+                    {
+                        var dirinfo = new DirectoryInfo(Helper.GetMediaDirectory(2, oid) + "video\\" +
+                                                        ocgrab.directory + "\\grabs\\");
+
+                        var lFi = new List<FileInfo>();
+                        lFi.AddRange(dirinfo.GetFiles());
+                        lFi =
+                            lFi.FindAll(
+                                f =>
+                                    f.Extension.ToLower() == ".jpg" && (sdl == 0 || f.CreationTime.Ticks > sdl) &&
+                                    (edl == 0 || f.CreationTime.Ticks < edl));
+                        lFi = lFi.OrderByDescending(f => f.CreationTime).ToList();
+                        func = func.Replace("total", lFi.Count.ToString(CultureInfo.InvariantCulture));
+                        lFi = lFi.Skip(page*pagesize).Take(pagesize).ToList();
+
+                        int max = 10000;
+                        if (lFi.Count > 0)
+                        {
+                            foreach (var f in lFi)
+                            {
+                                grablist.Append(f.Name+"|"+f.CreationTime.UnixTicks()+",");
+                                max--;
+                                if (max == 0)
+                                    break;
+                            }
+                        }
+                    }
+                    else
+                        func = func.Replace("total", "0");
+                    func = func.Replace("data", "\"" + grablist.ToString().Trim(',') + "\"");
+                    resp = "OK";
+                }
                     break;
                 case "getptzcommands":
                     int ptzid = Convert.ToInt32(GetVar(sRequest, "ptzid"));
@@ -3592,6 +3621,7 @@ namespace iSpyApplication.Server
             sResponse += "Server: iSpy\r\n";
             sResponse += "Expires: 0\r\n";
             sResponse += "Pragma: no-cache\r\n";
+            sResponse += "Access-Control-Allow-Origin: *\r\n";
             sResponse += "Cache-Control: no-cache, must-revalidate\r\n";
             if (!basicContentType)
                 sResponse += "Content-Type: multipart/x-mixed-replace; boundary=--myboundary";
@@ -3807,6 +3837,7 @@ namespace iSpyApplication.Server
 
                     sResponse += "HTTP/1.1 200 OK\r\n";
                     sResponse += "Server: iSpy\r\n";
+                    sResponse += "Access-Control-Allow-Origin: *\r\n";
 
                     bool sendend = false;
 

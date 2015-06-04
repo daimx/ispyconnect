@@ -28,6 +28,7 @@ namespace iSpyApplication.Controls
             toolTip1.SetToolTip(mpcbCloud, LocRm.GetString("UploadToCloud"));
             toolTip1.SetToolTip(mpcbYouTube, "YouTube");
             toolTip1.SetToolTip(mpcbMerge, LocRm.GetString("Merge"));
+            mpcbMerge.Visible = Helper.HasFeature(Enums.Features.Recording);
         }
 
         private void mpcbSelect_Click(object sender, EventArgs e)

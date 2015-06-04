@@ -3054,6 +3054,11 @@ namespace iSpyApplication
             catch (Exception)
             {
             }
+
+            if (RemoteCommands.Any(p => p.inwindow))
+            {
+                ShowCommandButtonWindow();
+            }
         }
 
         public void AddObjectExternal(int objectTypidId, int sourceIndex, int width, int height, string name, string url)

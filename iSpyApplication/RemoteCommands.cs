@@ -43,7 +43,7 @@ namespace iSpyApplication
                 {
                     n = LocRm.GetString(oc.name);
                 }
-                lbManualAlerts.Items.Add(oc.id + ": " + n);
+                lbManualAlerts.Items.Add(new MainForm.ListItem2(n,oc.id));
             }
         }
 
@@ -63,9 +63,8 @@ namespace iSpyApplication
         {
             if (lbManualAlerts.SelectedIndex > -1)
             {
-                string al = lbManualAlerts.SelectedItem.ToString();
-                al = al.Substring(0, al.IndexOf(":", StringComparison.Ordinal)).Trim();
-                objectsCommand oc = MainForm.RemoteCommands.FirstOrDefault(p => p.id == Convert.ToInt32(al));
+                var c = (MainForm.ListItem2) lbManualAlerts.SelectedItem;
+                objectsCommand oc = MainForm.RemoteCommands.FirstOrDefault(p => p.id == c.Value);
                 if (oc != null)
                 {
                     MainForm.RemoteCommands.Remove(oc);
@@ -78,9 +77,8 @@ namespace iSpyApplication
         {
             if (lbManualAlerts.SelectedIndex>-1)
             {
-               string al = lbManualAlerts.SelectedItem.ToString();
-                al = al.Substring(0, al.IndexOf(":", StringComparison.Ordinal)).Trim();
-                objectsCommand oc = MainForm.RemoteCommands.FirstOrDefault(p => p.id == Convert.ToInt32(al));
+                var c = (MainForm.ListItem2)lbManualAlerts.SelectedItem;
+                objectsCommand oc = MainForm.RemoteCommands.FirstOrDefault(p => p.id == c.Value);
                 if (oc != null)
                 {
                     string s = oc.command;
@@ -93,6 +91,7 @@ namespace iSpyApplication
                 }
 
             }
+            btnDelete.Enabled = btnEditCommand.Enabled = lbManualAlerts.SelectedIndex > -1;
         }
         
         private void linkLabel3_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -101,6 +100,26 @@ namespace iSpyApplication
                 return;
             MainForm.InitRemoteCommands();
             RenderCommands();
+        }
+
+        private void btnEditCommand_Click(object sender, EventArgs e)
+        {
+            if (lbManualAlerts.SelectedIndex > -1)
+            {
+                var c = (MainForm.ListItem2)lbManualAlerts.SelectedItem;
+                objectsCommand oc = MainForm.RemoteCommands.FirstOrDefault(p => p.id == c.Value);
+                if (oc != null)
+                {
+                    using (var arc = new AddRemoteCommand {OC = oc})
+                    {
+                        if (arc.ShowDialog(this) == DialogResult.OK)
+                        {
+                            RenderCommands();
+                        }
+
+                    }           
+                }
+            }
         }
     }
 }
